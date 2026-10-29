@@ -3,7 +3,7 @@
  * Padrões de Acessibilidade (WCAG 2.1 AA) e Manual da Marca IFSC
  */
 
-import { Analytics } from './analytics.js';
+import { Analytics } from './analytics.js?v=20261029v2';
 
 export const tabsMeta = {
   tools: {
@@ -63,7 +63,12 @@ export class UIController {
     this.currentCategory = 'all';  // 'all' ou slug da categoria
     this.currentFilter = 'all';    // 'all' ou 'favs'
     this.searchQuery = '';
-    this.favorites = JSON.parse(localStorage.getItem('ifsc_favorites') || '[]');
+    try {
+      const parsedFavs = JSON.parse(localStorage.getItem('ifsc_favorites') || '[]');
+      this.favorites = Array.isArray(parsedFavs) ? parsedFavs : [];
+    } catch (_) {
+      this.favorites = [];
+    }
     this.currentModalApp = null;
 
     this.cacheDOMElements();
@@ -250,14 +255,14 @@ export class UIController {
     let currentList = [];
 
     if (this.currentTab === 'tools') {
-      categories = this.catalog.toolsCategories;
-      currentList = this.catalog.allTools;
+      categories = this.catalog.toolsCategories || [];
+      currentList = this.catalog.allTools || [];
     } else if (this.currentTab === 'google') {
-      categories = this.catalog.googleEduCategories;
-      currentList = this.catalog.allGoogle;
+      categories = this.catalog.googleEduCategories || [];
+      currentList = this.catalog.allGoogle || [];
     } else if (this.currentTab === 'microsoft') {
-      categories = this.catalog.microsoftCategories;
-      currentList = this.catalog.allMicrosoft;
+      categories = this.catalog.microsoftCategories || [];
+      currentList = this.catalog.allMicrosoft || [];
     } else {
       categories = this.catalog.partnershipsCategories || [];
       currentList = this.catalog.allPartnerships || [];
@@ -335,10 +340,12 @@ export class UIController {
       `;
 
       categories.forEach(cat => {
+        if (!cat) return;
         const isCatActive = this.currentCategory === cat.slug;
+        const catCount = Array.isArray(cat.apps) ? cat.apps.length : 0;
         html += `
           <button type="button" data-category="${cat.slug}" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer ${isCatActive ? activeCatClasses : inactiveCatClasses}">
-            ${cat.name} <span class="opacity-70 text-[10px]">(${cat.apps.length})</span>
+            ${cat.name} <span class="opacity-70 text-[10px]">(${catCount})</span>
           </button>
         `;
       });
@@ -389,22 +396,23 @@ export class UIController {
   checkOtherTabs(query) {
     if (!query) return [];
     const tabs = [
-      { key: 'tools', name: 'Ferramentas (Apps)', list: this.catalog.allTools },
-      { key: 'google', name: 'Google Education', list: this.catalog.allGoogle },
-      { key: 'microsoft', name: 'Microsoft 365 Copilot', list: this.catalog.allMicrosoft },
+      { key: 'tools', name: 'Ferramentas (Apps)', list: this.catalog.allTools || [] },
+      { key: 'google', name: 'Google Education', list: this.catalog.allGoogle || [] },
+      { key: 'microsoft', name: 'Microsoft 365 Copilot', list: this.catalog.allMicrosoft || [] },
       { key: 'partnerships', name: 'Parcerias Oficiais (Estudantes)', list: this.catalog.allPartnerships || [] },
     ];
     const found = [];
     tabs.forEach(t => {
       if (t.key === this.currentTab) return;
-      const matches = t.list.filter(app => {
+      const matches = (t.list || []).filter(app => {
+        if (!app) return false;
         return (
-          app.name.toLowerCase().includes(query) ||
+          (app.name && app.name.toLowerCase().includes(query)) ||
           (app.description && app.description.toLowerCase().includes(query)) ||
           (app.badge && app.badge.toLowerCase().includes(query)) ||
           (app.categoryName && app.categoryName.toLowerCase().includes(query)) ||
           (app.ot04_status && app.ot04_status.toLowerCase().includes(query)) ||
-          (app.tags && app.tags.some(tag => tag.toLowerCase().includes(query)))
+          (Array.isArray(app.tags) && app.tags.some(tag => String(tag).toLowerCase().includes(query)))
         );
       });
       if (matches.length > 0) {
@@ -416,20 +424,23 @@ export class UIController {
 
   renderView() {
     let list = [];
-    if (this.currentTab === 'tools') list = this.catalog.allTools;
-    else if (this.currentTab === 'google') list = this.catalog.allGoogle;
-    else if (this.currentTab === 'microsoft') list = this.catalog.allMicrosoft;
+    if (this.currentTab === 'tools') list = this.catalog.allTools || [];
+    else if (this.currentTab === 'google') list = this.catalog.allGoogle || [];
+    else if (this.currentTab === 'microsoft') list = this.catalog.allMicrosoft || [];
     else list = this.catalog.allPartnerships || [];
 
-    if (this.currentTab === 'microsoft') {
-      this.msAlertBanner.classList.remove('hidden');
-    } else {
-      this.msAlertBanner.classList.add('hidden');
+    if (this.msAlertBanner) {
+      if (this.currentTab === 'microsoft') {
+        this.msAlertBanner.classList.remove('hidden');
+      } else {
+        this.msAlertBanner.classList.add('hidden');
+      }
     }
 
-    const q = this.searchQuery.toLowerCase().trim();
+    const q = (this.searchQuery || '').toLowerCase().trim();
 
     const filtered = list.filter(app => {
+      if (!app) return false;
       // 1. Filtro de Favoritos
       if (this.currentFilter === 'favs') {
         if (!this.favorites.includes(app.id)) return false;
@@ -448,13 +459,13 @@ export class UIController {
       // 4. Filtro por Busca de Texto
       if (q) {
         const matchesSearch =
-          app.name.toLowerCase().includes(q) ||
-          app.description.toLowerCase().includes(q) ||
+          (app.name && app.name.toLowerCase().includes(q)) ||
+          (app.description && app.description.toLowerCase().includes(q)) ||
           (app.badge && app.badge.toLowerCase().includes(q)) ||
           (app.categoryName && app.categoryName.toLowerCase().includes(q)) ||
           (app.ot04_status && app.ot04_status.toLowerCase().includes(q)) ||
-          (app.tags && app.tags.some(t => t.toLowerCase().includes(q))) ||
-          (q.includes('ot') && (app.ot04_status || (app.tags && app.tags.includes('ot04'))));
+          (Array.isArray(app.tags) && app.tags.some(t => String(t).toLowerCase().includes(q))) ||
+          (q.includes('ot') && (app.ot04_status || (Array.isArray(app.tags) && app.tags.includes('ot04'))));
         if (!matchesSearch) return false;
       }
 
@@ -618,9 +629,9 @@ export class UIController {
 
     // Alerta Dinâmico de Instruções de Domínio & Acesso
     const isInstitutionalForm = app.access_scope === 'exclusivo_ifsc_form' || app.access_scope === 'exclusivo_ifsc';
-    const isTool = !isInstitutionalForm && (this.catalog.allTools.some(t => t.id === app.id) || app.access_scope === 'publico_gmail');
-    const isGoogle = this.catalog.allGoogle.some(g => g.id === app.id);
-    const isMicrosoft = app.platform === 'microsoft' || this.catalog.allMicrosoft.some(m => m.id === app.id);
+    const isTool = !isInstitutionalForm && ((this.catalog.allTools || []).some(t => t.id === app.id) || app.access_scope === 'publico_gmail');
+    const isGoogle = (this.catalog.allGoogle || []).some(g => g.id === app.id);
+    const isMicrosoft = app.platform === 'microsoft' || (this.catalog.allMicrosoft || []).some(m => m.id === app.id);
 
     if (app.opportunity_plan) {
       this.modalAccessNotice.innerHTML = `
@@ -786,10 +797,10 @@ export class UIController {
     const tCount = document.getElementById('tab-tools-count');
     const gCount = document.getElementById('tab-google-count');
     const mCount = document.getElementById('tab-microsoft-count');
-    if (tCount) tCount.textContent = this.catalog.allTools.length;
-    if (gCount) gCount.textContent = this.catalog.allGoogle.length;
-    if (mCount) mCount.textContent = this.catalog.allMicrosoft.length;
     const pCount = document.getElementById('tab-partnerships-count');
-    if (pCount && this.catalog.allPartnerships) pCount.textContent = this.catalog.allPartnerships.length;
+    if (tCount) tCount.textContent = (this.catalog.allTools || []).length;
+    if (gCount) gCount.textContent = (this.catalog.allGoogle || []).length;
+    if (mCount) mCount.textContent = (this.catalog.allMicrosoft || []).length;
+    if (pCount) pCount.textContent = (this.catalog.allPartnerships || []).length;
   }
 }
