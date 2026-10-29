@@ -8,11 +8,7 @@ import { Analytics } from './analytics.js';
 export const tabsMeta = {
   tools: {
     title: "Aplicações com IA",
-    desc: "Automação, conformidade e auditoria institucional no IFSC. Acesso público via @gmail ou institucional."
-  },
-  experts: {
-    title: "Agentes Especialistas (Gems)",
-    desc: "Assistentes treinados nas rotinas e normas do IFSC. Exclusivo para @ifsc.edu.br e @aluno.ifsc.edu.br."
+    desc: "Automação, diagnóstico de maturidade, conformidade e auditoria institucional no IFSC."
   },
   google: {
     title: "Google AI & Education",
@@ -75,7 +71,6 @@ export class UIController {
 
   cacheDOMElements() {
     this.tabToolsBtn = document.getElementById('tab-tools');
-    this.tabExpertsBtn = document.getElementById('tab-experts');
     this.tabGoogleBtn = document.getElementById('tab-google');
     this.tabMicrosoftBtn = document.getElementById('tab-microsoft');
     this.tabPartnershipsBtn = document.getElementById('tab-partnerships');
@@ -115,6 +110,7 @@ export class UIController {
    */
   getIfscIconMarkup(iconKey) {
     const icons = {
+      pesquisa: `<div class="category-icon bg-gradient-to-br from-[#32a041] to-emerald-700"><i class="bi bi-clipboard2-data-fill text-lg mb-0.5"></i><span>IA IFSC</span></div>`,
       lgpd: `<div class="category-icon bg-gradient-to-br from-emerald-500 to-emerald-700"><i class="bi bi-shield-lock-fill text-lg mb-0.5"></i><span>LGPD</span></div>`,
       bpmn: `<div class="category-icon bg-gradient-to-br from-blue-500 to-indigo-700"><i class="bi bi-diagram-3-fill text-lg mb-0.5"></i><span>PROC</span></div>`,
       siads: `<div class="category-icon bg-gradient-to-br from-amber-500 to-orange-600"><i class="bi bi-box-seam-fill text-lg mb-0.5"></i><span>ADM</span></div>`,
@@ -145,7 +141,7 @@ export class UIController {
     }
 
     // Apenas ferramentas institucionais homologadas do próprio IFSC recebem o ícone IFSC
-    if (app.iconKey && ['lgpd', 'bpmn', 'siads', 'rsctae', 'taes', 'professores', 'alunos'].includes(app.iconKey) && !isPartner) {
+    if (app.iconKey && ['pesquisa', 'lgpd', 'bpmn', 'siads', 'rsctae', 'taes', 'professores', 'alunos'].includes(app.iconKey) && !isPartner) {
       return this.getIfscIconMarkup(app.iconKey);
     }
 
@@ -229,7 +225,12 @@ export class UIController {
             <i class="bi bi-gift-fill text-amber-600 dark:text-amber-400 shrink-0 mt-0.5"></i>
             <span class="line-clamp-2">${app.opportunity_plan}</span>
           </div>
-          ` : ''}
+          ` : (app.access_scope === 'exclusivo_ifsc_form' ? `
+          <div class="mt-2.5 p-2 rounded-xl bg-purple-50/90 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 text-[11px] text-purple-900 dark:text-purple-200 font-semibold flex items-start gap-1.5 leading-snug">
+            <i class="bi bi-lock-fill text-purple-600 dark:text-purple-400 shrink-0 mt-0.5"></i>
+            <span class="line-clamp-2">Exclusivo: conta @ifsc.edu.br ou @aluno.ifsc.edu.br</span>
+          </div>
+          ` : '')}
         </div>
 
         <!-- Rodapé do Card: Ação discreta -->
@@ -251,9 +252,6 @@ export class UIController {
     if (this.currentTab === 'tools') {
       categories = this.catalog.toolsCategories;
       currentList = this.catalog.allTools;
-    } else if (this.currentTab === 'experts') {
-      categories = this.catalog.gemsCategories;
-      currentList = this.catalog.allGems;
     } else if (this.currentTab === 'google') {
       categories = this.catalog.googleEduCategories;
       currentList = this.catalog.allGoogle;
@@ -392,7 +390,6 @@ export class UIController {
     if (!query) return [];
     const tabs = [
       { key: 'tools', name: 'Ferramentas (Apps)', list: this.catalog.allTools },
-      { key: 'experts', name: 'Agentes Especialistas (Gems)', list: this.catalog.allGems },
       { key: 'google', name: 'Google Education', list: this.catalog.allGoogle },
       { key: 'microsoft', name: 'Microsoft 365 Copilot', list: this.catalog.allMicrosoft },
       { key: 'partnerships', name: 'Parcerias Oficiais (Estudantes)', list: this.catalog.allPartnerships || [] },
@@ -420,7 +417,6 @@ export class UIController {
   renderView() {
     let list = [];
     if (this.currentTab === 'tools') list = this.catalog.allTools;
-    else if (this.currentTab === 'experts') list = this.catalog.allGems;
     else if (this.currentTab === 'google') list = this.catalog.allGoogle;
     else if (this.currentTab === 'microsoft') list = this.catalog.allMicrosoft;
     else list = this.catalog.allPartnerships || [];
@@ -532,18 +528,19 @@ export class UIController {
   }
 
   switchTab(tab) {
-    this.currentTab = tab;
+    const validTab = tabsMeta[tab] ? tab : 'tools';
+    this.currentTab = validTab;
     this.currentAudience = 'all';
     this.currentCategory = 'all';
     this.currentFilter = 'all';
 
-    const tabs = ['tools', 'experts', 'google', 'microsoft', 'partnerships'];
+    const tabs = ['tools', 'google', 'microsoft', 'partnerships'];
 
     tabs.forEach(key => {
       const btn = document.getElementById(`tab-${key}`);
       const countSpan = document.getElementById(`tab-${key}-count`);
       if (!btn) return;
-      const isActive = (key === tab);
+      const isActive = (key === validTab);
 
       if (isActive) {
         btn.setAttribute('aria-selected', 'true');
@@ -562,10 +559,10 @@ export class UIController {
 
     const secTitle = document.getElementById('section-title');
     const secDesc = document.getElementById('section-desc');
-    if (secTitle && tabsMeta[tab]) secTitle.textContent = tabsMeta[tab].title;
-    if (secDesc && tabsMeta[tab]) secDesc.textContent = tabsMeta[tab].desc;
+    if (secTitle && tabsMeta[validTab]) secTitle.textContent = tabsMeta[validTab].title;
+    if (secDesc && tabsMeta[validTab]) secDesc.textContent = tabsMeta[validTab].desc;
 
-    Analytics.trackTabSwitch(tab);
+    Analytics.trackTabSwitch(validTab);
     this.renderFilterButtons();
     this.renderView();
   }
@@ -594,9 +591,20 @@ export class UIController {
     this.currentModalApp = app;
 
     document.getElementById('modal-app-name').textContent = app.name;
-    document.getElementById('modal-app-description').textContent = app.description;
+    const modalDescEl = document.getElementById('modal-app-description');
+    if (Array.isArray(app.modalSummaryPoints) && app.modalSummaryPoints.length > 0) {
+      modalDescEl.innerHTML = `
+        <p class="font-medium text-gray-800 dark:text-gray-100 mb-2">${this.escapeHtml(app.description)}</p>
+        <ul class="space-y-1.5 text-[11px] sm:text-xs text-gray-600 dark:text-gray-300 list-disc pl-4">
+          ${app.modalSummaryPoints.map(pt => `<li>${this.escapeHtml(pt)}</li>`).join('')}
+        </ul>
+      `;
+    } else {
+      modalDescEl.textContent = app.description;
+    }
     this.modalOpenAppBtn.href = app.url;
-    this.modalOpenAppBtn.innerHTML = `<span>Abrir Ferramenta</span><i class="bi bi-box-arrow-up-right text-xs"></i>`;
+    const ctaText = this.escapeHtml(app.ctaLabel || 'Abrir Ferramenta');
+    this.modalOpenAppBtn.innerHTML = `<span>${ctaText}</span><i class="bi bi-box-arrow-up-right text-xs"></i>`;
 
     this.modalOpenAppBtn.onclick = () => {
       Analytics.trackAppClick(app);
@@ -609,8 +617,8 @@ export class UIController {
     }
 
     // Alerta Dinâmico de Instruções de Domínio & Acesso
-    const isGem = this.catalog.allGems.some(g => g.id === app.id) || app.access_scope === 'exclusivo_ifsc';
-    const isTool = this.catalog.allTools.some(t => t.id === app.id) || app.access_scope === 'publico_gmail';
+    const isInstitutionalForm = app.access_scope === 'exclusivo_ifsc_form' || app.access_scope === 'exclusivo_ifsc';
+    const isTool = !isInstitutionalForm && (this.catalog.allTools.some(t => t.id === app.id) || app.access_scope === 'publico_gmail');
     const isGoogle = this.catalog.allGoogle.some(g => g.id === app.id);
     const isMicrosoft = app.platform === 'microsoft' || this.catalog.allMicrosoft.some(m => m.id === app.id);
 
@@ -635,27 +643,27 @@ export class UIController {
           </div>
         </div>
       `;
-    } else if (isGem) {
+    } else if (isInstitutionalForm) {
       this.modalAccessNotice.innerHTML = `
-        <div class="p-3.5 rounded-2xl bg-purple-50/90 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/70 text-left text-xs text-purple-950 dark:text-purple-200 w-full flex items-start gap-3 shadow-2xs">
+        <div class="p-3.5 rounded-2xl bg-purple-50/95 dark:bg-purple-950/45 border border-purple-300 dark:border-purple-800/80 text-left text-xs text-purple-950 dark:text-purple-200 w-full flex items-start gap-3 shadow-2xs">
           <span class="w-7 h-7 rounded-xl bg-purple-600 text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-xs">
             <i class="bi bi-shield-lock-fill"></i>
           </span>
-          <div class="space-y-1">
+          <div class="space-y-1.5">
             <div class="flex items-center gap-1.5 flex-wrap">
-              <strong class="font-extrabold text-purple-950 dark:text-purple-100 text-xs">Exclusivo para Domínio IFSC</strong>
-              <span class="px-2 py-0.2 rounded text-[9px] font-black bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 uppercase tracking-wider">Aluno • Servidor</span>
+              <strong class="font-extrabold text-purple-950 dark:text-purple-100 text-xs">Login Institucional Obrigatório (IFSC)</strong>
+              <span class="px-2 py-0.2 rounded text-[9px] font-black bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 uppercase tracking-wider">Servidor • Estudante</span>
             </div>
             <p class="text-[11px] leading-relaxed text-purple-900 dark:text-purple-300">
-              Esta <strong>Gem do Gemini</strong> opera exclusivamente no ecossistema educacional do IFSC. O acesso só é autorizado com contas institucionais oficiais:
+              Para responder ao <strong>Questionário de Maturidade de IA no IFSC</strong> no Google Forms, é necessário estar autenticado no navegador com sua conta institucional oficial:
             </p>
-            <ul class="space-y-0.5 text-[11px] list-disc pl-4 text-purple-950 dark:text-purple-200 font-semibold">
-              <li><strong>Servidores (Técnicos e Professores):</strong> <code class="font-mono bg-purple-200/80 dark:bg-purple-900/80 px-1 py-0.2 rounded text-purple-950 dark:text-purple-100">@ifsc.edu.br</code></li>
-              <li><strong>Alunos e Estudantes:</strong> <code class="font-mono bg-purple-200/80 dark:bg-purple-900/80 px-1 py-0.2 rounded text-purple-950 dark:text-purple-100">@aluno.ifsc.edu.br</code></li>
+            <ul class="space-y-1 text-[11px] list-disc pl-4 text-purple-950 dark:text-purple-200 font-semibold">
+              <li><strong>Servidores (Docentes e TAEs):</strong> <code class="font-mono bg-purple-200/80 dark:bg-purple-900/80 px-1.5 py-0.2 rounded text-purple-950 dark:text-purple-100">@ifsc.edu.br</code></li>
+              <li><strong>Estudantes / Alunos:</strong> <code class="font-mono bg-purple-200/80 dark:bg-purple-900/80 px-1.5 py-0.2 rounded text-purple-950 dark:text-purple-100">@aluno.ifsc.edu.br</code></li>
             </ul>
-            <p class="text-[11px] font-bold text-red-600 dark:text-red-400 flex items-center gap-1 pt-0.5">
-              <i class="bi bi-exclamation-triangle-fill shrink-0"></i>
-              <span>Não funciona com contas @gmail.com pessoais (o Google Gemini bloqueará a abertura).</span>
+            <p class="text-[11px] font-bold text-red-600 dark:text-red-400 flex items-start gap-1.5 pt-0.5 leading-snug">
+              <i class="bi bi-exclamation-triangle-fill shrink-0 mt-0.5"></i>
+              <span>Contas pessoais (@gmail.com) não possuem permissão de acesso. Se aparecer aviso de restrição, alterne a conta conectada no Google para o seu e-mail do IFSC.</span>
             </p>
           </div>
         </div>
@@ -721,7 +729,7 @@ export class UIController {
     }
 
     let modalDomainBadge = '';
-    if (isGem) {
+    if (isInstitutionalForm) {
       modalDomainBadge = `<span class="inline-block px-2.5 py-0.5 text-xs font-bold rounded-full text-purple-800 dark:text-purple-300 bg-purple-100 dark:bg-purple-950/80 border border-purple-300 dark:border-purple-800"><i class="bi bi-lock-fill text-[10px] mr-1"></i>Exclusivo @ifsc / @aluno</span>`;
     } else if (isTool) {
       modalDomainBadge = `<span class="inline-block px-2.5 py-0.5 text-xs font-bold rounded-full text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-800"><i class="bi bi-globe2 text-[10px] mr-1"></i>Público (@gmail.com)</span>`;
@@ -760,7 +768,10 @@ export class UIController {
       event.preventDefault();
       event.stopPropagation();
     }
-    const shareUrl = `${window.location.origin}/?app=${encodeURIComponent(appId)}`;
+    const appObj = this.catalog.appMap && this.catalog.appMap[appId];
+    const shareUrl = (appObj && appObj.shortRoute)
+      ? `${window.location.origin}${appObj.shortRoute}`
+      : `${window.location.origin}/?app=${encodeURIComponent(appId)}`;
     navigator.clipboard.writeText(shareUrl).then(() => {
       const btn = event?.currentTarget;
       if (btn) {
@@ -773,11 +784,9 @@ export class UIController {
 
   updateCounters() {
     const tCount = document.getElementById('tab-tools-count');
-    const eCount = document.getElementById('tab-experts-count');
     const gCount = document.getElementById('tab-google-count');
     const mCount = document.getElementById('tab-microsoft-count');
     if (tCount) tCount.textContent = this.catalog.allTools.length;
-    if (eCount) eCount.textContent = this.catalog.allGems.length;
     if (gCount) gCount.textContent = this.catalog.allGoogle.length;
     if (mCount) mCount.textContent = this.catalog.allMicrosoft.length;
     const pCount = document.getElementById('tab-partnerships-count');

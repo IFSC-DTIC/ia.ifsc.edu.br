@@ -181,7 +181,7 @@
       </span>
       <h2 class="text-2xl font-black mb-2 text-gray-900 dark:text-white">Código 404</h2>
       <p class="text-xs text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-        O link solicitado não corresponde a nenhuma ferramenta homologada, agente ou página do portal do IFSC.
+        O link solicitado não corresponde a nenhuma ferramenta homologada ou página ativa do portal do IFSC.
       </p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
         <a href="./" class="px-6 py-3 bg-[#32a041] hover:bg-[#247a30] text-white font-bold rounded-xl shadow-lg shadow-green-600/20 transition-all flex items-center justify-center gap-2 text-xs">
@@ -208,6 +208,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       // Ícones Oficiais do IFSC
       const icons = { 
+        pesquisa: `<div class="category-icon bg-gradient-to-br from-[#32a041] to-emerald-700"><span class="material-icons-round text-2xl mb-0.5">fact_check</span><span>IA IFSC</span></div>`,
         lgpd: `<div class="category-icon bg-gradient-to-br from-green-500 to-green-700"><span class="material-icons-round text-2xl mb-0.5">privacy_tip</span><span>LGPD</span></div>`, 
         bpmn: `<div class="category-icon bg-gradient-to-br from-blue-500 to-blue-700"><span class="material-icons-round text-2xl mb-0.5">schema</span><span>PROC</span></div>`, 
         siads: `<div class="category-icon bg-gradient-to-br from-amber-500 to-orange-600"><span class="material-icons-round text-2xl mb-0.5">inventory_2</span><span>ADM</span></div>`, 
@@ -252,19 +253,19 @@
         'copilot': { id: 'ms-copilot', tab: 'microsoft' },
         'm365': { id: 'ms-copilot', tab: 'microsoft' },
         'office': { id: 'ms-office-web', tab: 'microsoft' },
-        'sibi': { id: 'agent-sibi', tab: 'experts' },
-        'agent-sibi': { id: 'agent-sibi', tab: 'experts' },
-        'srp': { id: 'agent-srp', tab: 'experts' },
-        'silvia': { id: 'agent-srp', tab: 'experts' },
-        'agent-srp': { id: 'agent-srp', tab: 'experts' },
-        'dgp': { id: 'agent-dgp', tab: 'experts' },
-        'agent-dgp': { id: 'agent-dgp', tab: 'experts' },
-        'cgd': { id: 'agent-cgd', tab: 'experts' },
-        'agent-cgd': { id: 'agent-cgd', tab: 'experts' },
         'guardiao': { id: 'guardiao', tab: 'tools' },
         'sezio': { id: 'sezio', tab: 'tools' },
         'lardic': { id: 'lardic', tab: 'tools' },
+        'form': { id: 'form', tab: 'tools' },
+        'maturidade': { id: 'form', tab: 'tools' },
+        'maturidade-ia': { id: 'form', tab: 'tools' },
+        'questionario': { id: 'form', tab: 'tools' },
+        'questionario-ia': { id: 'form', tab: 'tools' },
+        'pesquisa-ia': { id: 'form', tab: 'tools' },
+        'diagnostico-ia': { id: 'form', tab: 'tools' },
         'ripd': { id: 'ripd', tab: 'tools' },
+        'form2ripd': { id: 'ripd', tab: 'tools' },
+        'relatorio-impacto': { id: 'ripd', tab: 'tools' },
         'mapeamento': { id: 'mapeamento', tab: 'tools' },
         'chatbot': { id: 'chatbot', tab: 'tools' },
         'pedemeia': { id: 'pedemeia', tab: 'tools' },
@@ -286,7 +287,7 @@
       };
 
       const params = new URLSearchParams(window.location.search);
-      let queryApp = params.get('app') || params.get('gem') || params.get('tool');
+      let queryApp = params.get('app') || params.get('tool');
       let queryTab = params.get('tab');
       const noRedirect = params.get('noredirect') === '1' || params.get('noredirect') === 'true';
 
@@ -298,10 +299,7 @@
         const first = routeParts[0].toLowerCase();
         const second = routeParts[1] ? routeParts[1].toLowerCase() : null;
 
-        if (['gem', 'gems', 'agente', 'agentes', 'especialistas'].includes(first)) {
-          detectedTab = 'experts';
-          detectedApp = second || 'all';
-        } else if (['google', 'gsuite', 'workspace'].includes(first)) {
+        if (['google', 'gsuite', 'workspace'].includes(first)) {
           detectedTab = 'google';
           detectedApp = second || 'all';
         } else if (['ms', 'microsoft', 'm365'].includes(first)) {
@@ -357,17 +355,14 @@
         return [];
       };
 
-      Promise.all([fetchJson('apps.json'), fetchJson('agents.json'), fetchJson('partnerships.json')])
-        .then(([appsData, agentsData, partsData]) => {
+      Promise.all([fetchJson('apps.json'), fetchJson('partnerships.json')])
+        .then(([appsData, partsData]) => {
           const catalog = [];
           if (Array.isArray(appsData)) {
-            appsData.forEach(c => (c.apps || []).forEach(a => catalog.push({ ...a, iconKey: c.iconKey || a.iconKey })));
-          }
-          if (Array.isArray(agentsData)) {
-            agentsData.forEach(c => (c.apps || []).forEach(a => catalog.push({ ...a, iconKey: c.iconKey || a.iconKey })));
+            appsData.forEach(c => (c.apps || []).forEach(a => catalog.push({ ...a, iconKey: a.iconKey || c.iconKey })));
           }
           if (Array.isArray(partsData)) {
-            partsData.forEach(c => (c.apps || []).forEach(a => catalog.push({ ...a, iconKey: c.iconKey || a.iconKey })));
+            partsData.forEach(c => (c.apps || []).forEach(a => catalog.push({ ...a, iconKey: a.iconKey || c.iconKey })));
           }
 
           const targetApp = catalog.find(a => 
@@ -383,6 +378,9 @@
             
             const openBtn = document.getElementById('modal-open-app-btn');
             openBtn.href = targetApp.url;
+            if (targetApp.ctaLabel) {
+              openBtn.innerHTML = `<span>${targetApp.ctaLabel}</span><i class="bi bi-box-arrow-up-right text-xs"></i>`;
+            }
 
             // Rastreadores de Acesso (Google Analytics 4 e Microsoft Clarity)
             openBtn.onclick = () => {
@@ -411,7 +409,7 @@
               document.getElementById('modal-app-icon-container').innerHTML = icons[targetApp.iconKey] || icons.bpmn;
             }
 
-            const isGem = targetApp.id.startsWith('agent-') || targetApp.access_scope === 'exclusivo_ifsc';
+            const isInstitutionalForm = targetApp.access_scope === 'exclusivo_ifsc_form' || targetApp.access_scope === 'exclusivo_ifsc';
             const complianceBox = document.getElementById('modal-compliance-box');
             if (targetApp.opportunity_plan) {
               complianceBox.innerHTML = `
@@ -434,7 +432,7 @@
                   </div>
                 </div>
               `;
-            } else if (isGem) {
+            } else if (isInstitutionalForm) {
               complianceBox.innerHTML = `
                 <div class="w-full bg-purple-50/90 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/70 rounded-2xl p-3.5 text-left flex items-start gap-2.5 text-purple-950 dark:text-purple-200">
                   <span class="w-6 h-6 rounded-lg bg-purple-600 text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-2xs">
@@ -442,15 +440,15 @@
                   </span>
                   <div>
                     <div class="flex items-center gap-1.5 flex-wrap">
-                      <strong class="font-extrabold text-xs">Exclusivo para Domínio IFSC</strong>
-                      <span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 uppercase">Aluno &bull; Servidor</span>
+                      <strong class="font-extrabold text-xs">Login Institucional Obrigatório (IFSC)</strong>
+                      <span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 uppercase">Servidor &bull; Estudante</span>
                     </div>
                     <p class="mt-1 text-xs leading-relaxed text-purple-900 dark:text-purple-300">
-                      Esta <strong>Gem do Gemini</strong> opera exclusivamente no ecossistema do IFSC. O acesso exige conta institucional oficial: <code class="font-mono font-bold bg-purple-200/80 dark:bg-purple-900 px-1 py-0.2 rounded">@ifsc.edu.br</code> ou <code class="font-mono font-bold bg-purple-200/80 dark:bg-purple-900 px-1 py-0.2 rounded">@aluno.ifsc.edu.br</code>.
+                      Para responder ao <strong>Questionário de Maturidade de IA no IFSC</strong> no Google Forms, é obrigatório utilizar conta institucional oficial: <code class="font-mono font-bold bg-purple-200/80 dark:bg-purple-900 px-1 py-0.2 rounded">@ifsc.edu.br</code> ou <code class="font-mono font-bold bg-purple-200/80 dark:bg-purple-900 px-1 py-0.2 rounded">@aluno.ifsc.edu.br</code>.
                     </p>
                     <p class="mt-1 text-[11px] text-red-600 dark:text-red-400 font-bold flex items-center gap-1">
                       <i class="bi bi-exclamation-triangle-fill"></i>
-                      <span>Não funciona com contas @gmail.com pessoais (o Google Gemini bloqueará a abertura).</span>
+                      <span>Contas @gmail.com pessoais não possuem permissão de acesso no formulário.</span>
                     </p>
                   </div>
                 </div>
@@ -477,7 +475,7 @@
             // Badges
             const badgesContainer = document.getElementById('modal-badges-container');
             let badgesHTML = '';
-            if (isGem) {
+            if (isInstitutionalForm) {
               badgesHTML += `<span class="bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-purple-200 dark:border-purple-800/60 flex items-center gap-1"><i class="bi bi-lock-fill"></i>Exclusivo IFSC</span>`;
             } else {
               badgesHTML += `<span class="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/60 flex items-center gap-1"><i class="bi bi-globe2"></i>Público (@gmail)</span>`;
@@ -496,7 +494,9 @@
             // Compartilhar
             const shareBtn = document.getElementById('modal-share-btn');
             shareBtn.onclick = () => {
-              const shareUrl = `${window.location.origin}${basePath}?app=${targetApp.id}`;
+              const shareUrl = targetApp.shortRoute
+                ? `${window.location.origin}${basePath.replace(/\/$/, '')}${targetApp.shortRoute}`
+                : `${window.location.origin}${basePath}?app=${targetApp.id}`;
               navigator.clipboard.writeText(shareUrl).then(() => {
                 const btnText = document.getElementById('share-btn-text');
                 btnText.textContent = 'Copiado!';
