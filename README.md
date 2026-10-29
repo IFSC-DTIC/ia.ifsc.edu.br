@@ -42,8 +42,9 @@ Este portal foi concebido e estruturado para operacionalizar as diretrizes da **
   - **Adobe Creative Cloud & Firefly:** Descontos educacionais superiores a 60% com IA generativa.
   - **Grammarly for Education:** Revisor inteligente de redação, estilo e clareza.
 
-### 2. Rotas Curtas Institucionais e Caixas Suspensas (Deep Linking)
-- **`https://ia.ifsc.edu.br/form`** ([`form/index.html`](form/index.html)): Abre automaticamente a caixa suspensa (*modal*) explicativa do **Questionário de Maturidade de IA no IFSC**, destacando objetivos estratégicos, conformidade com a OT nº 04/2025 / LGPD e o aviso obrigatório de que **é necessário estar autenticado com conta institucional `@ifsc.edu.br` (servidores) ou `@aluno.ifsc.edu.br` (estudantes)** para acessar o formulário oficial no Google Forms.
+### 2. Rotas Curtas Institucionais, CTA de Topo e Caixas Suspensas (Deep Linking)
+- **Botão Institucional de Topo (`Participe da Pesquisa sobre IA no IFSC`):** Posicionado no cabeçalho ao lado de *Diretrizes conforme OT 04/2025* com layout responsivo adaptativo (inline em telas `sm+` e barra dedicada *full-width* em dispositivos móveis `< 640px`) e *progressive enhancement* (`href="./form"` + abertura instantânea do modal SPA).
+- **`https://ia.ifsc.edu.br/form`** ([`form/index.html`](form/index.html)): Abre automaticamente a caixa suspensa (*modal*) concisa do **Questionário de Maturidade de IA no IFSC** na paleta verde institucional do IFSC (`#32a041` / `emerald`), informando de forma objetiva a obrigatoriedade de autenticação com conta **`@ifsc.edu.br` (servidores) ou `@aluno.ifsc.edu.br` (estudantes)** para responder no Google Forms.
 - **`https://ia.ifsc.edu.br/ripd`** ([`ripd/index.html`](ripd/index.html)): Abre a caixa suspensa institucional da ferramenta **IFSC-DTIC-CGD: Form2RIPD** (Gerador de Relatórios de Impacto à Proteção de Dados — LGPD), anteriormente associada por busca parcial ao termo `form`.
 - **`https://ia.ifsc.edu.br/termo/`** ([`termo/index.html`](termo/index.html)): Aplicação 100% client-side (Vue 3 + html2pdf) para emissão de termos de consentimento LGPD e ECA Digital em PDF, sem transmissão de dados para servidores externos.
 - Suporte integral via [`404.html`](404.html) e [`router.js`](assets/js/modules/router.js) a links diretos para ferramentas (`ia.ifsc.edu.br/?app=guardiao`) e abas (`ia.ifsc.edu.br/?tab=partnerships`) no GitHub Pages.
@@ -70,9 +71,9 @@ Em alinhamento às mudanças de plataforma anunciadas pela Google referentes à 
 | **Zero Secrets / API Keys** | ✅ Conforme | Nenhuma credencial ou token privado está versionado no repositório. Uso estrito de BYOK (*Bring Your Own Key*) quando aplicável. |
 | **Zero PII em Repositório Público** | ✅ Conforme | Nenhum dado pessoal (nomes civis, CPFs, e-mails privados, telefones ou caminhos locais) consta nos códigos ou documentações públicas; referências técnicas utilizam exclusivamente a sigla institucional **`FLM`**. |
 | **Proteção contra Spam** | ✅ Conforme | E-mails institucionais protegidos por codificação Base64 e hidratados via JavaScript no cliente (`js-safe-email`). |
-| **Content Security Policy (CSP)** | ✅ Ativo | Meta tags restritivas em `index.html`, `404.html`, `form/index.html`, `ripd/index.html` e `termo/index.html`. |
+| **Content Security Policy (CSP)** | ✅ Ativo | Meta tags restritivas (`object-src 'none'; base-uri 'self'`) em `index.html`, `404.html`, `form/index.html`, `ripd/index.html` e `termo/index.html`. |
 | **Cabeçalhos de Segurança Client-Side** | ✅ Ativo | `Referrer-Policy: strict-origin-when-cross-origin` e `X-Content-Type-Options: nosniff` ativos em todas as páginas HTML. |
-| **Sanitização contra XSS** | ✅ Conforme | Todos os parâmetros e campos de pesquisa tratados via `escapeHtml()` e `textContent`. |
+| **Sanitização contra XSS e URLs** | ✅ Conforme | Renderização dinâmica protegida com `escapeHtml()`, `textContent` e validação estrita de protocolo `sanitizeUrl()` em `ui.js`, `app.js` e `404.html`. |
 | **Links Externos Seguros** | ✅ Conforme | Todas as âncoras para sistemas de terceiros utilizam `target="_blank"` e `rel="noopener noreferrer"`. |
 | **Anonimização de Telemetria** | ✅ Conforme | Google Analytics 4 com `anonymize_ip: true` e flags de personalização desligadas; Microsoft Clarity com máscara para conformidade LGPD. |
 | **Hospedagem Estática Segura** | ✅ Conforme | Publicação estática via GitHub Pages (branch `GitHubPage`, espelhada em `main`) com `.nojekyll`, eliminando superfície de ataque de servidor. |
@@ -83,7 +84,7 @@ Em alinhamento às mudanças de plataforma anunciadas pela Google referentes à 
 
 - **Google Analytics 4 (GA4):**
   - **ID de Medição:** `G-T49JX2YJMT` (`anonymize_ip: true`, `allow_google_signals: false`, `allow_ad_personalization_signals: false`).
-  - **Eventos Homologados:** Cliques em ferramentas (`app_click`), alternância de abas (`tab_view`), buscas realizadas (`search`), cliques na OT 04/2025 (`ot04_document_access`) e filtros de público (`filter_audience_change`).
+  - **Eventos Homologados:** Cliques em ferramentas (`app_click`), CTA da Pesquisa de IA no topo (`survey_cta_click`), alternância de abas (`tab_view`), buscas realizadas (`search`), cliques na OT 04/2025 (`ot04_document_access`) e filtros de público (`filter_audience_change`).
 - **Microsoft Clarity:** ID `wddq8jjbkx` com mascaramento nativo para conformidade LGPD.
 - **SEO & Indexação:**
   - **`robots.txt` & `sitemap.xml`:** Atualizados para refletir as 4 abas ativas em produção e as rotas canônicas `/form`, `/ripd` e `/termo/`.
