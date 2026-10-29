@@ -1,6 +1,6 @@
 /**
  * Módulo de Dados e Catálogo de Ferramentas Institucionais do IFSC
- * Suporte a carregamento dinâmico de apps.json e agents.json com dados embutidos de alta disponibilidade
+ * Suporte a carregamento dinâmico de apps.json e partnerships.json com dados embutidos de alta disponibilidade
  */
 
 const CDN_ICONS = 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png';
@@ -57,6 +57,7 @@ export const defaultToolsCategories = [
       },
       {
         "id": "ripd",
+        "shortRoute": "/ripd",
         "name": "IFSC-DTIC-CGD: Form2RIPD",
         "url": "https://ai.studio/apps/drive/1fv20kTnlkPYefuOFIXP2bEo3ld8p8th7?showAssistant=true&showPreview=true&fullscreenApplet=true",
         "badge": "Gerador RIPD",
@@ -66,6 +67,7 @@ export const defaultToolsCategories = [
         "safety_rating": "LGPD OK",
         "tags": [
           "ripd",
+          "form2ripd",
           "lgpd",
           "relatório de impacto",
           "cgd",
@@ -215,6 +217,46 @@ export const defaultToolsCategories = [
     "iconKey": "siads",
     "apps": [
       {
+        "id": "form",
+        "shortRoute": "/form",
+        "ctaLabel": "Responder Questionário",
+        "name": "Questionário de Maturidade de IA no IFSC",
+        "url": "https://docs.google.com/forms/d/e/1FAIpQLSczGBSLNXR7lwmbdHzFxERm9NnTh40dQL473tAIoK2_v7ekQw/viewform?usp=sharing&ouid=113323964168701114446",
+        "badge": "Diagnóstico IA • IFSC",
+        "iconKey": "pesquisa",
+        "description": "Diagnóstico institucional sobre o nível de adoção, letramento, governança ética e demandas de Inteligência Artificial no ensino, pesquisa, extensão e gestão do IFSC.",
+        "modalSummaryPoints": [
+          "Objetivo estratégico: mapear práticas atuais, necessidades de capacitação, infraestrutura e ferramentas de IA prioritárias para o planejamento institucional do IFSC.",
+          "Público participante: servidores (docentes e técnicos administrativos) e estudantes regularmente vinculados ao Instituto.",
+          "Conformidade e privacidade: levantamento conduzido em alinhamento à Orientação Técnica nº 04/2025 (DTIC/CGD) e à LGPD, com preenchimento estimado em cerca de 5 minutos."
+        ],
+        "ot04_status": "Pesquisa Oficial IFSC",
+        "safety_rating": "LGPD OK",
+        "tags": [
+          "form",
+          "formulário",
+          "questionário",
+          "maturidade",
+          "pesquisa",
+          "diagnóstico",
+          "governança",
+          "ia",
+          "ot04",
+          "dtic",
+          "cgd",
+          "servidores",
+          "alunos",
+          "estudantes",
+          "ifsc"
+        ],
+        "access_scope": "exclusivo_ifsc_form",
+        "domain_requirement": "Exclusivo IFSC: requer conta institucional @ifsc.edu.br (servidores) ou @aluno.ifsc.edu.br (estudantes)",
+        "audiences": [
+          "servidores",
+          "alunos"
+        ]
+      },
+      {
         "id": "padronizacao",
         "name": "Ferramenta de Padronização de Inventário",
         "url": "https://ai.studio/apps/drive/12kTlPi2J1wxLKOskn_xAeb-CwJsBMv09?showAssistant=true&showPreview=true&fullscreenApplet=true",
@@ -285,114 +327,6 @@ export const defaultToolsCategories = [
         "domain_requirement": "Público: funciona com qualquer @gmail.com ou conta institucional"
       }
     ]
-  }
-];
-
-// Coleção base de especialistas Gems IFSC (Fallback resiliente offline-first)
-export const defaultGemsCategories = [
-  {
-    "name": "Servidores",
-    "slug": "servidores",
-    "iconKey": "taes",
-    "apps": [
-      {
-        "id": "agent-sibi",
-        "name": "Especialista SiBI",
-        "url": "https://gemini.google.com/gem/98588692d34c",
-        "badge": "Bibliotecas",
-        "description": "Assistente especializado para os profissionais do Sistema Integrado de Bibliotecas do IFSC (SiBI). Focado em normalização ABNT, consultas ao catálogo SophiA e políticas de acervo institucional. (Acesso restrito às contas institucionais @ifsc.edu.br e @aluno.ifsc.edu.br).",
-        "ot04_status": "Homologado IFSC",
-        "safety_rating": "LGPD OK",
-        "access_scope": "exclusivo_ifsc",
-        "domain_requirement": "Exclusivo @ifsc.edu.br e @aluno.ifsc.edu.br (Não abre com @gmail.com)",
-        "tags": [
-          "sibi",
-          "biblioteca",
-          "abnt",
-          "sophia",
-          "livros",
-          "acervo",
-          "servidores",
-          "ot04",
-          "exclusivo-ifsc"
-        ]
-      },
-      {
-        "id": "agent-srp",
-        "name": "Silv.IA - Compras e Licitações",
-        "url": "https://gemini.google.com/gem/10GI7VXwtapdgUxFfCp-14-kKJULn7Ord?usp=sharing",
-        "badge": "Compras & SIPAC",
-        "description": "Assistente virtual para Gestão Pública. Automatiza a geração de Atas de Registro de Preços (ARPs) pelo SIPAC e fornece consultoria técnica sobre compras baseada na Lei nº 14.133/2021. (Acesso restrito às contas institucionais @ifsc.edu.br e @aluno.ifsc.edu.br).",
-        "ot04_status": "Homologado IFSC",
-        "safety_rating": "Apoio Técnico",
-        "access_scope": "exclusivo_ifsc",
-        "domain_requirement": "Exclusivo @ifsc.edu.br e @aluno.ifsc.edu.br (Não abre com @gmail.com)",
-        "tags": [
-          "licitações",
-          "compras",
-          "sipac",
-          "arp",
-          "lei 14.133",
-          "servidores",
-          "ot04",
-          "exclusivo-ifsc"
-        ]
-      },
-      {
-        "id": "agent-dgp",
-        "name": "DGP (FAQs - Tira Dúvidas)",
-        "url": "https://gemini.google.com/gem/1qDLyL7Tm_wuF-1zhFVK7ZZV7xcI4p41I?usp=sharing",
-        "badge": "Gestão Pessoas",
-        "description": "Consultor especializado em Gestão de Pessoas do IFSC. Auxilia na interpretação da Resolução Consup nº 11/2019 e em FAQs sobre normas, desenvolvimento profissional, progressão e licença capacitação. (Acesso restrito às contas institucionais @ifsc.edu.br e @aluno.ifsc.edu.br).",
-        "ot04_status": "Homologado IFSC",
-        "safety_rating": "Apoio Técnico",
-        "access_scope": "exclusivo_ifsc",
-        "domain_requirement": "Exclusivo @ifsc.edu.br e @aluno.ifsc.edu.br (Não abre com @gmail.com)",
-        "tags": [
-          "dgp",
-          "gestão de pessoas",
-          "carreira",
-          "progressão",
-          "capacitação",
-          "servidores",
-          "ot04",
-          "exclusivo-ifsc"
-        ]
-      },
-      {
-        "id": "agent-cgd",
-        "name": "CGD - Governança de TI",
-        "url": "https://gemini.google.com/gem/1QNvQjzJVhZF8B71gJBdX_0G3_HrU4Fyb?usp=sharing",
-        "badge": "Governança TI",
-        "description": "Especialista em Governança de TI e Gestão de Dados do IFSC. Fornece respostas técnicas e precisas estritamente baseadas nas normativas oficiais do IFSC e preceitos da OT 04/2025. (Acesso restrito às contas institucionais @ifsc.edu.br e @aluno.ifsc.edu.br).",
-        "ot04_status": "Homologado IFSC",
-        "safety_rating": "LGPD OK",
-        "access_scope": "exclusivo_ifsc",
-        "domain_requirement": "Exclusivo @ifsc.edu.br e @aluno.ifsc.edu.br (Não abre com @gmail.com)",
-        "tags": [
-          "cgd",
-          "governança",
-          "dtic",
-          "ti",
-          "dados",
-          "ot04",
-          "servidores",
-          "exclusivo-ifsc"
-        ]
-      }
-    ]
-  },
-  {
-    "name": "Professores",
-    "slug": "professores",
-    "iconKey": "professores",
-    "apps": []
-  },
-  {
-    "name": "Alunos",
-    "slug": "alunos",
-    "iconKey": "alunos",
-    "apps": []
   }
 ];
 
@@ -1015,7 +949,7 @@ export function flattenCategories(categories) {
         ...app,
         categoryName: cat.name,
         categorySlug: cat.slug,
-        iconKey: isPartner ? null : (cat.iconKey || app.iconKey),
+        iconKey: isPartner ? null : (app.iconKey || cat.iconKey),
         audiences: inferAudiences(app, cat)
       });
     });
@@ -1029,21 +963,16 @@ export function flattenCategories(categories) {
 export async function loadCatalog() {
   const ts = Date.now();
   let toolsCategories = defaultToolsCategories;
-  let gemsCategories = defaultGemsCategories;
   let partnershipsCategories = defaultPartnershipsCategories;
 
   try {
-    const [appsRes, agentsRes, partsRes] = await Promise.allSettled([
+    const [appsRes, partsRes] = await Promise.allSettled([
       fetch('./apps.json?v=' + ts).then(r => r.ok ? r.json() : null),
-      fetch('./agents.json?v=' + ts).then(r => r.ok ? r.json() : null),
       fetch('./partnerships.json?v=' + ts).then(r => r.ok ? r.json() : null)
     ]);
 
     if (appsRes.status === 'fulfilled' && Array.isArray(appsRes.value) && appsRes.value.length > 0) {
       toolsCategories = appsRes.value;
-    }
-    if (agentsRes.status === 'fulfilled' && Array.isArray(agentsRes.value) && agentsRes.value.length > 0) {
-      gemsCategories = agentsRes.value;
     }
     if (partsRes.status === 'fulfilled' && Array.isArray(partsRes.value) && partsRes.value.length > 0) {
       partnershipsCategories = partsRes.value;
@@ -1053,24 +982,23 @@ export async function loadCatalog() {
   }
 
   const allTools = flattenCategories(toolsCategories);
-  const allGems = flattenCategories(gemsCategories);
   const allGoogle = flattenCategories(googleEduCategories);
   const allMicrosoft = flattenCategories(microsoftCategories);
   const allPartnerships = flattenCategories(partnershipsCategories);
 
   const appMap = {};
-  [...allTools, ...allGems, ...allGoogle, ...allMicrosoft, ...allPartnerships].forEach(app => {
+  [...allTools, ...allGoogle, ...allMicrosoft, ...allPartnerships].forEach(app => {
     appMap[app.id] = app;
   });
 
   return {
     toolsCategories,
-    gemsCategories,
+    gemsCategories: [],
     googleEduCategories,
     microsoftCategories,
     partnershipsCategories,
     allTools,
-    allGems,
+    allExperts: [],
     allGoogle,
     allMicrosoft,
     allPartnerships,

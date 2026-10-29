@@ -1,6 +1,6 @@
 /**
  * Modulo de Roteamento SPA e Resolucao de Deep Linking
- * Trata rotas de prefixo (/gem/, /lgpd/, /google/) e atalhos diretos
+ * Trata rotas de prefixo (/lgpd/, /google/) e atalhos institucionais (/form, /ripd)
  */
 
 export const aliases = {
@@ -22,15 +22,19 @@ export const aliases = {
   'copilot': 'ms-copilot',
   'm365': 'ms-copilot',
   'office': 'ms-office-web',
-  'sibi': 'agent-sibi',
-  'srp': 'agent-srp',
-  'silvia': 'agent-srp',
-  'dgp': 'agent-dgp',
-  'cgd': 'agent-cgd',
   'guardiao': 'guardiao',
   'sezio': 'sezio',
   'lardic': 'lardic',
+  'form': 'form',
+  'maturidade': 'form',
+  'maturidade-ia': 'form',
+  'questionario': 'form',
+  'questionario-ia': 'form',
+  'pesquisa-ia': 'form',
+  'diagnostico-ia': 'form',
   'ripd': 'ripd',
+  'form2ripd': 'ripd',
+  'relatorio-impacto': 'ripd',
   'mapeamento': 'mapeamento',
   'chatbot': 'chatbot',
   'pedemeia': 'pedemeia',
@@ -67,7 +71,6 @@ export class AppRouter {
     // 2. Com prefixos conhecidos
     if (this.catalog.appMap['g-' + clean]) return this.catalog.appMap['g-' + clean];
     if (this.catalog.appMap['ms-' + clean]) return this.catalog.appMap['ms-' + clean];
-    if (this.catalog.appMap['agent-' + clean]) return this.catalog.appMap['agent-' + clean];
     if (this.catalog.appMap['partner-' + clean]) return this.catalog.appMap['partner-' + clean];
 
     // 3. Tabela de sinonimias
@@ -87,10 +90,10 @@ export class AppRouter {
 
   init() {
     const urlParams = new URLSearchParams(window.location.search);
-    let reqApp = urlParams.get('app') || urlParams.get('gem') || urlParams.get('tool');
+    let reqApp = urlParams.get('app') || urlParams.get('tool');
     const reqTab = urlParams.get('tab');
 
-    // Se veio direto pelo pathname (ex: /gem/sibi, /lgpd/guardiao, /google/iastudio)
+    // Se veio direto pelo pathname (ex: /form, /ripd, /lgpd/guardiao, /google/iastudio)
     if (!reqApp) {
       const pathParts = window.location.pathname.split('/').filter(Boolean);
       const lastPart = pathParts[pathParts.length - 1];
@@ -107,7 +110,6 @@ export class AppRouter {
     if (reqTab) {
       const t = reqTab.toLowerCase();
       if (['tools', 'ferramentas', 'apps'].includes(t)) initialTab = 'tools';
-      else if (['experts', 'gems', 'agentes', 'especialistas'].includes(t)) initialTab = 'experts';
       else if (['google', 'gsuite', 'workspace'].includes(t)) initialTab = 'google';
       else if (['microsoft', 'ms', 'copilot', 'office'].includes(t)) initialTab = 'microsoft';
       else if (['partnerships', 'parcerias', 'estudantes', 'oportunidades', 'beneficios'].includes(t)) initialTab = 'partnerships';
@@ -119,13 +121,11 @@ export class AppRouter {
         const target = this.resolveApp(reqApp);
         if (target) {
           // Alternar automaticamente para a aba correta
-          if (this.catalog.allGems.some(g => g.id === target.id)) {
-            this.ui.switchTab('experts');
-          } else if (this.catalog.allGoogle.some(g => g.id === target.id)) {
+          if ((this.catalog.allGoogle || []).some(g => g.id === target.id)) {
             this.ui.switchTab('google');
-          } else if (this.catalog.allMicrosoft.some(m => m.id === target.id)) {
+          } else if ((this.catalog.allMicrosoft || []).some(m => m.id === target.id)) {
             this.ui.switchTab('microsoft');
-          } else if (this.catalog.allPartnerships && this.catalog.allPartnerships.some(p => p.id === target.id)) {
+          } else if ((this.catalog.allPartnerships || []).some(p => p.id === target.id)) {
             this.ui.switchTab('partnerships');
           } else {
             this.ui.switchTab('tools');

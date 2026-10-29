@@ -3,10 +3,10 @@
  * Inicializacao e Orquestracao Modular
  */
 
-import { loadCatalog } from './data/catalog.js';
-import { UIController, initAntiSpamEmails } from './modules/ui.js';
-import { AppRouter } from './modules/router.js';
-import { Analytics } from './modules/analytics.js';
+import { loadCatalog } from './data/catalog.js?v=20261029v2';
+import { UIController, initAntiSpamEmails } from './modules/ui.js?v=20261029v2';
+import { AppRouter } from './modules/router.js?v=20261029v2';
+import { Analytics } from './modules/analytics.js?v=20261029v2';
 
 async function initApp() {
   try {
@@ -120,7 +120,9 @@ async function initApp() {
     if (ui.modalShareBtn) {
       ui.modalShareBtn.addEventListener('click', () => {
         if (!ui.currentModalApp) return;
-        const shareUrl = `${window.location.origin}/?app=${encodeURIComponent(ui.currentModalApp.id)}`;
+        const shareUrl = ui.currentModalApp.shortRoute
+          ? `${window.location.origin}${ui.currentModalApp.shortRoute}`
+          : `${window.location.origin}/?app=${encodeURIComponent(ui.currentModalApp.id)}`;
         navigator.clipboard.writeText(shareUrl).then(() => {
           ui.shareBtnText.textContent = 'Copiado!';
           setTimeout(() => { ui.shareBtnText.textContent = 'Copiar Link'; }, 2000);
@@ -130,7 +132,6 @@ async function initApp() {
 
     // Eventos de abas
     if (ui.tabToolsBtn) ui.tabToolsBtn.addEventListener('click', () => ui.switchTab('tools'));
-    if (ui.tabExpertsBtn) ui.tabExpertsBtn.addEventListener('click', () => ui.switchTab('experts'));
     if (ui.tabGoogleBtn) ui.tabGoogleBtn.addEventListener('click', () => ui.switchTab('google'));
     if (ui.tabMicrosoftBtn) ui.tabMicrosoftBtn.addEventListener('click', () => ui.switchTab('microsoft'));
     if (ui.tabPartnershipsBtn) ui.tabPartnershipsBtn.addEventListener('click', () => ui.switchTab('partnerships'));
