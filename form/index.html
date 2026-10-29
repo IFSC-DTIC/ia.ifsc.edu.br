@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Cabeçalhos de Segurança e Privacidade (OT nº 04/2025 & LGPD) -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.googletagmanager.com https://www.google-analytics.com https://www.clarity.ms https://scripts.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://*.clarity.ms https://c.bing.com;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.googletagmanager.com https://www.google-analytics.com https://www.clarity.ms https://scripts.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net data:; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://*.clarity.ms https://c.bing.com; object-src 'none'; base-uri 'self';" />
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
 
@@ -61,26 +61,24 @@
     </div>
     <div class="flex flex-wrap items-center justify-center gap-1.5 mb-2">
       <span class="px-2.5 py-0.5 text-xs font-bold rounded-full text-[#247a30] dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800">Diagnóstico IA • IFSC</span>
-      <span class="px-2.5 py-0.5 text-xs font-bold rounded-full text-purple-800 dark:text-purple-300 bg-purple-100 dark:bg-purple-950/80 border border-purple-300 dark:border-purple-800"><i class="bi bi-lock-fill text-[10px] mr-1"></i>Exclusivo @ifsc / @aluno</span>
+      <span class="px-2.5 py-0.5 text-xs font-bold rounded-full text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-800"><i class="bi bi-shield-lock-fill text-[10px] mr-1"></i>Exclusivo @ifsc / @aluno</span>
     </div>
     <h1 class="text-lg sm:text-xl font-bold mb-2">Questionário de Maturidade de IA no IFSC</h1>
-    <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-3.5 text-left bg-gray-50 dark:bg-gray-800/60 p-3.5 rounded-xl border border-gray-200/80 dark:border-gray-700/60 space-y-2">
-      <p class="font-medium text-gray-800 dark:text-gray-100">Diagnóstico institucional sobre o nível de adoção, letramento, governança ética e demandas de Inteligência Artificial no ensino, pesquisa, extensão e gestão do IFSC.</p>
-      <ul class="list-disc pl-4 space-y-1 text-xs">
-        <li>Subsídio estratégico para capacitação, licenciamento educacional e governança conforme a Orientação Técnica nº 04/2025 (DTIC/CGD).</li>
-        <li>Aberto a servidores (docentes e TAEs) e estudantes regularmente vinculados ao IFSC.</li>
-      </ul>
+    <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-3.5 leading-relaxed">
+      Diagnóstico institucional sobre o uso, capacitação e demandas de Inteligência Artificial no IFSC (~5 min).
+    </p>
+    <div class="p-3.5 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/70 text-left text-xs text-emerald-950 dark:text-emerald-200 mb-4 flex items-start gap-3">
+      <span class="w-7 h-7 rounded-xl bg-[#32a041] text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-xs">
+        <i class="bi bi-shield-lock-fill"></i>
+      </span>
+      <div class="space-y-1">
+        <strong class="block font-extrabold text-emerald-950 dark:text-emerald-100 text-xs">Login Institucional Obrigatório</strong>
+        <p class="text-[11px] leading-relaxed text-emerald-900 dark:text-emerald-300">
+          Acesse autenticado com <code class="font-mono font-bold bg-emerald-200/80 dark:bg-emerald-900/80 px-1 py-0.2 rounded text-emerald-950 dark:text-emerald-100">@ifsc.edu.br</code> ou <code class="font-mono font-bold bg-emerald-200/80 dark:bg-emerald-900/80 px-1 py-0.2 rounded text-emerald-950 dark:text-emerald-100">@aluno.ifsc.edu.br</code>. Contas <code class="font-mono">@gmail.com</code> pessoais não têm permissão.
+        </p>
+      </div>
     </div>
-    <div class="p-3.5 rounded-2xl bg-purple-50 dark:bg-purple-950/45 border border-purple-300 dark:border-purple-800/80 text-left text-xs text-purple-950 dark:text-purple-200 mb-4">
-      <strong class="block font-extrabold mb-1"><i class="bi bi-shield-lock-fill mr-1"></i>Login Institucional Obrigatório (IFSC)</strong>
-      <p class="mb-1.5">Para responder ao questionário no Google Forms, utilize exclusivamente sua conta institucional:</p>
-      <ul class="list-disc pl-4 font-semibold space-y-0.5 mb-1.5">
-        <li>Servidores: <code class="font-mono bg-purple-200/80 dark:bg-purple-900 px-1 rounded">@ifsc.edu.br</code></li>
-        <li>Estudantes: <code class="font-mono bg-purple-200/80 dark:bg-purple-900 px-1 rounded">@aluno.ifsc.edu.br</code></li>
-      </ul>
-      <p class="text-[11px] font-bold text-red-600 dark:text-red-400">Contas pessoais (@gmail.com) não possuem permissão de acesso.</p>
-    </div>
-    <div class="flex flex-col sm:flex-row gap-2">
+    <div class="flex flex-col-reverse sm:flex-row gap-2">
       <a href="../" class="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
         Ir para o Portal de IA
       </a>

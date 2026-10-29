@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <!-- Content Security Policy e Cabeçalhos de Segurança -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://www.google-analytics.com https://www.clarity.ms https://scripts.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://*.clarity.ms https://c.bing.com; frame-src 'self' https:;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://unpkg.com https://www.googletagmanager.com https://www.google-analytics.com https://www.clarity.ms https://scripts.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://*.clarity.ms https://c.bing.com; frame-src 'self' https:; object-src 'none'; base-uri 'self';" />
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
 
@@ -371,15 +371,31 @@
           );
 
           if (targetApp) {
+            const escapeHtml = (str) => {
+              if (!str) return '';
+              return String(str).replace(/[&<>"']/g, s => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+              }[s]));
+            };
+            const sanitizeUrl = (url) => {
+              if (!url || typeof url !== 'string') return '#';
+              const trimmed = url.trim();
+              return /^(https?:\/\/|\.\/|\/)/i.test(trimmed) ? trimmed : '#';
+            };
+
             document.getElementById('loader').classList.add('hidden');
             document.getElementById('app-modal-content').classList.remove('hidden');
-            document.getElementById('modal-app-name').textContent = targetApp.name;
+            document.getElementById('modal-app-name').textContent = targetApp.name || '';
             document.getElementById('modal-app-description').textContent = (targetApp.description || '').replace(/#atalho/g, '').trim();
             
             const openBtn = document.getElementById('modal-open-app-btn');
-            openBtn.href = targetApp.url;
+            openBtn.href = sanitizeUrl(targetApp.url);
             if (targetApp.ctaLabel) {
-              openBtn.innerHTML = `<span>${targetApp.ctaLabel}</span><i class="bi bi-box-arrow-up-right text-xs"></i>`;
+              openBtn.innerHTML = `<span>${escapeHtml(targetApp.ctaLabel)}</span><i class="bi bi-box-arrow-up-right text-xs"></i>`;
             }
 
             // Rastreadores de Acesso (Google Analytics 4 e Microsoft Clarity)
@@ -403,8 +419,9 @@
               }
             };
 
-            if (targetApp.iconUrl) {
-              document.getElementById('modal-app-icon-container').innerHTML = `<div class="w-14 h-14 rounded-2xl bg-white dark:bg-gray-800 p-2 border border-gray-200 dark:border-gray-700 shadow-md flex items-center justify-center"><img src="${targetApp.iconUrl}" class="w-10 h-10 object-contain" alt="${targetApp.name}"></div>`;
+            const safeIconUrl = targetApp.iconUrl ? escapeHtml(sanitizeUrl(targetApp.iconUrl)) : '';
+            if (safeIconUrl && safeIconUrl !== '#') {
+              document.getElementById('modal-app-icon-container').innerHTML = `<div class="w-14 h-14 rounded-2xl bg-white dark:bg-gray-800 p-2 border border-gray-200 dark:border-gray-700 shadow-md flex items-center justify-center"><img src="${safeIconUrl}" class="w-10 h-10 object-contain" alt="${escapeHtml(targetApp.name)}"></div>`;
             } else {
               document.getElementById('modal-app-icon-container').innerHTML = icons[targetApp.iconKey] || icons.bpmn;
             }
@@ -420,35 +437,31 @@
                   <div>
                     <div class="flex items-center gap-1.5 flex-wrap">
                       <strong class="font-extrabold text-xs text-amber-950 dark:text-amber-100">Oportunidade para Estudantes</strong>
-                      <span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200 uppercase">${targetApp.badge || 'Benefício'}</span>
+                      <span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200 uppercase">${escapeHtml(targetApp.badge || 'Benefício')}</span>
                     </div>
                     <p class="mt-1 text-xs text-amber-900 dark:text-amber-200 font-bold leading-relaxed">
-                      ${targetApp.opportunity_plan}
+                      ${escapeHtml(targetApp.opportunity_plan)}
                     </p>
                     <p class="mt-1 text-[11px] text-amber-800 dark:text-amber-300 flex items-center gap-1">
                       <i class="bi bi-check-circle-fill text-amber-600"></i>
-                      <span>${targetApp.domain_requirement || 'Acesso para estudantes com e-mail institucional acadêmico'}</span>
+                      <span>${escapeHtml(targetApp.domain_requirement || 'Acesso para estudantes com e-mail institucional acadêmico')}</span>
                     </p>
                   </div>
                 </div>
               `;
             } else if (isInstitutionalForm) {
               complianceBox.innerHTML = `
-                <div class="w-full bg-purple-50/90 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/70 rounded-2xl p-3.5 text-left flex items-start gap-2.5 text-purple-950 dark:text-purple-200">
-                  <span class="w-6 h-6 rounded-lg bg-purple-600 text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-2xs">
+                <div class="w-full bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/70 rounded-2xl p-3.5 text-left flex items-start gap-2.5 text-emerald-950 dark:text-emerald-200">
+                  <span class="w-6 h-6 rounded-lg bg-[#32a041] text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-2xs">
                     <i class="bi bi-shield-lock-fill"></i>
                   </span>
                   <div>
                     <div class="flex items-center gap-1.5 flex-wrap">
-                      <strong class="font-extrabold text-xs">Login Institucional Obrigatório (IFSC)</strong>
-                      <span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 uppercase">Servidor &bull; Estudante</span>
+                      <strong class="font-extrabold text-xs">Login Institucional Obrigatório</strong>
+                      <span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-emerald-200 dark:bg-emerald-900 text-[#247a30] dark:text-emerald-200 uppercase">Servidor &bull; Estudante</span>
                     </div>
-                    <p class="mt-1 text-xs leading-relaxed text-purple-900 dark:text-purple-300">
-                      Para responder ao <strong>Questionário de Maturidade de IA no IFSC</strong> no Google Forms, é obrigatório utilizar conta institucional oficial: <code class="font-mono font-bold bg-purple-200/80 dark:bg-purple-900 px-1 py-0.2 rounded">@ifsc.edu.br</code> ou <code class="font-mono font-bold bg-purple-200/80 dark:bg-purple-900 px-1 py-0.2 rounded">@aluno.ifsc.edu.br</code>.
-                    </p>
-                    <p class="mt-1 text-[11px] text-red-600 dark:text-red-400 font-bold flex items-center gap-1">
-                      <i class="bi bi-exclamation-triangle-fill"></i>
-                      <span>Contas @gmail.com pessoais não possuem permissão de acesso no formulário.</span>
+                    <p class="mt-1 text-xs leading-relaxed text-emerald-900 dark:text-emerald-300">
+                      Acesse autenticado com <code class="font-mono font-bold bg-emerald-200/80 dark:bg-emerald-900 px-1 py-0.2 rounded">@ifsc.edu.br</code> ou <code class="font-mono font-bold bg-emerald-200/80 dark:bg-emerald-900 px-1 py-0.2 rounded">@aluno.ifsc.edu.br</code>. Contas <code class="font-mono">@gmail.com</code> pessoais não têm permissão.
                     </p>
                   </div>
                 </div>
@@ -476,18 +489,18 @@
             const badgesContainer = document.getElementById('modal-badges-container');
             let badgesHTML = '';
             if (isInstitutionalForm) {
-              badgesHTML += `<span class="bg-purple-100 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-purple-200 dark:border-purple-800/60 flex items-center gap-1"><i class="bi bi-lock-fill"></i>Exclusivo IFSC</span>`;
+              badgesHTML += `<span class="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/60 flex items-center gap-1"><i class="bi bi-shield-lock-fill"></i>Exclusivo @ifsc / @aluno</span>`;
             } else {
               badgesHTML += `<span class="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/60 flex items-center gap-1"><i class="bi bi-globe2"></i>Público (@gmail)</span>`;
             }
             if (targetApp.ot04_status) {
-              badgesHTML += `<span class="bg-emerald-100 dark:bg-emerald-950/60 text-[#247a30] dark:text-emerald-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/60 flex items-center gap-1"><i class="bi bi-shield-check"></i>OT 04/2025: ${targetApp.ot04_status}</span>`;
+              badgesHTML += `<span class="bg-emerald-100 dark:bg-emerald-950/60 text-[#247a30] dark:text-emerald-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/60 flex items-center gap-1"><i class="bi bi-shield-check"></i>OT 04/2025: ${escapeHtml(targetApp.ot04_status)}</span>`;
             }
             if (targetApp.safety_rating) {
-              badgesHTML += `<span class="bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800/60 flex items-center gap-1"><i class="bi bi-info-circle"></i>${targetApp.safety_rating}</span>`;
+              badgesHTML += `<span class="bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800/60 flex items-center gap-1"><i class="bi bi-info-circle"></i>${escapeHtml(targetApp.safety_rating)}</span>`;
             }
             if (targetApp.tags && Array.isArray(targetApp.tags)) {
-              badgesHTML += targetApp.tags.slice(0, 3).map(t => `<span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">${t}</span>`).join('');
+              badgesHTML += targetApp.tags.slice(0, 3).map(t => `<span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">${escapeHtml(t)}</span>`).join('');
             }
             badgesContainer.innerHTML = badgesHTML;
 

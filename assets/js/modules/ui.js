@@ -818,7 +818,6 @@ export class UIController {
     const pCount = document.getElementById('tab-partnerships-count');
     if (tCount) tCount.textContent = (this.catalog.allTools || []).length;
     if (gCount) gCount.textContent = (this.catalog.allGoogle || []).length;
-    if (mCount) pCount;
     if (mCount) mCount.textContent = (this.catalog.allMicrosoft || []).length;
     if (pCount) pCount.textContent = (this.catalog.allPartnerships || []).length;
   }
