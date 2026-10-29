@@ -48,102 +48,191 @@ async function initApp() {
     const bindSurveyCta = (el, source) => {
       if (!el) return;
       el.addEventListener('click', (e) => {
-        e.preventDefault();
-        window.openSurveyModal(e, source);
+        if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+          e.preventDefault();
+          Analytics.trackSurveyCtaClick(source);
+          ui.openAppModal('form', e);
+        } else {
+          Analytics.trackSurveyCtaClick(source);
+        }
       });
     };
-    bindSurveyCta(document.getElementById('header-survey-btn'), 'header');
-    bindSurveyCta(document.getElementById('mobile-survey-btn'), 'mobile_drawer');
+    bindSurveyCta(document.getElementById('header-survey-btn'), 'header_desktop');
+    bindSurveyCta(document.getElementById('header-survey-btn-mobile'), 'header_mobile');
 
-    // Inicializa escuta de eventos na UI
-    ui.initEventListeners();
+    // Modal Orientacao Tecnica n. 04/2025
+    const ot04Modal = document.getElementById('ot04-modal');
+    const ot04ModalContent = document.getElementById('ot04-modal-content');
+    const closeOt04ModalBtn = document.getElementById('close-ot04-modal-btn');
+    const ot04ModalBackdrop = document.getElementById('ot04-modal-backdrop');
 
-    // Renderiza a primeira aba
-    ui.render();
-
-    // Inicializa roteamento por URL (?tab=...&app=...)
-    router.init();
-
-    // Inicializa atalhos de teclado (Ctrl+K, Esc, '/')
-    initKeyboardShortcuts(ui);
-
-    // Oculta skeletons de carregamento inicial
-    const skeleton = document.getElementById('loading-skeleton');
-    if (skeleton) skeleton.classList.add('hidden');
-
-    console.info('Portal de IA do IFSC inicializado com sucesso.');
-  } catch (err) {
-    console.error('Falha critica ao inicializar o Portal de IA:', err);
-    showInitializationError(err);
-  }
-}
-
-/**
- * Atalhos globais de teclado
- */
-function initKeyboardShortcuts(ui) {
-  document.addEventListener('keydown', (e) => {
-    // Esc: fecha modal aberto
-    if (e.key === 'Escape') {
-      const modal = document.getElementById('app-modal');
-      if (modal && !modal.classList.contains('hidden')) {
-        ui.closeAppModal();
+    window.openOt04Modal = () => {
+      if (!ot04Modal) return;
+      ot04Modal.classList.remove('pointer-events-none');
+      ot04Modal.classList.add('opacity-100');
+      if (ot04ModalContent) {
+        ot04ModalContent.classList.remove('scale-95');
+        ot04ModalContent.classList.add('scale-100');
       }
+      Analytics.trackOt04Access();
+    };
+
+    window.closeOt04Modal = () => {
+      if (!ot04Modal) return;
+      ot04Modal.classList.remove('opacity-100');
+      if (ot04ModalContent) {
+        ot04ModalContent.classList.remove('scale-100');
+        ot04ModalContent.classList.add('scale-95');
+      }
+      setTimeout(() => {
+        ot04Modal.classList.add('pointer-events-none');
+      }, 200);
+    };
+
+    if (closeOt04ModalBtn) closeOt04ModalBtn.addEventListener('click', window.closeOt04Modal);
+    if (ot04ModalBackdrop) ot04ModalBackdrop.addEventListener('click', window.closeOt04Modal);
+
+    // Modal Office 365 Educacao
+    const msInfoModal = document.getElementById('ms-info-modal');
+    const msInfoModalContent = document.getElementById('ms-info-modal-content');
+    const closeMsInfoModalBtn = document.getElementById('close-ms-info-modal-btn');
+    const msInfoModalBackdrop = document.getElementById('ms-info-modal-backdrop');
+
+    window.openMsInfoModal = () => {
+      if (!msInfoModal) return;
+      msInfoModal.classList.remove('pointer-events-none');
+      msInfoModal.classList.add('opacity-100');
+      if (msInfoModalContent) {
+        msInfoModalContent.classList.remove('scale-95');
+        msInfoModalContent.classList.add('scale-100');
+      }
+    };
+
+    const closeMsInfoModal = () => {
+      if (!msInfoModal) return;
+      msInfoModal.classList.remove('opacity-100');
+      if (msInfoModalContent) {
+        msInfoModalContent.classList.remove('scale-100');
+        msInfoModalContent.classList.add('scale-95');
+      }
+      setTimeout(() => {
+        msInfoModal.classList.add('pointer-events-none');
+      }, 200);
+    };
+
+    if (closeMsInfoModalBtn) closeMsInfoModalBtn.addEventListener('click', closeMsInfoModal);
+    if (msInfoModalBackdrop) msInfoModalBackdrop.addEventListener('click', closeMsInfoModal);
+
+    // Fechamento de modais
+    if (ui.closeModalBtn) ui.closeModalBtn.addEventListener('click', () => ui.closeModal());
+    if (ui.modalBackdrop) ui.modalBackdrop.addEventListener('click', () => ui.closeModal());
+
+    // Tecla ESC para fechar modais
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        ui.closeModal();
+        closeMsInfoModal();
+        window.closeOt04Modal();
+      }
+    });
+
+    // Copiar link do modal
+    if (ui.modalShareBtn) {
+      ui.modalShareBtn.addEventListener('click', () => {
+        if (!ui.currentModalApp) return;
+        const shareUrl = ui.currentModalApp.shortRoute
+          ? `${window.location.origin}${ui.currentModalApp.shortRoute}`
+          : `${window.location.origin}/?app=${encodeURIComponent(ui.currentModalApp.id)}`;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          ui.shareBtnText.textContent = 'Copiado!';
+          setTimeout(() => { ui.shareBtnText.textContent = 'Copiar Link'; }, 2000);
+        });
+      });
     }
 
-    // Ctrl+K ou Cmd+K ou '/': foca na barra de busca
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-      e.preventDefault();
-      focusSearchInput();
-    } else if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
-      e.preventDefault();
-      focusSearchInput();
-    }
-  });
-}
+    // Eventos de abas
+    if (ui.tabToolsBtn) ui.tabToolsBtn.addEventListener('click', () => ui.switchTab('tools'));
+    if (ui.tabGoogleBtn) ui.tabGoogleBtn.addEventListener('click', () => ui.switchTab('google'));
+    if (ui.tabMicrosoftBtn) ui.tabMicrosoftBtn.addEventListener('click', () => ui.switchTab('microsoft'));
+    if (ui.tabPartnershipsBtn) ui.tabPartnershipsBtn.addEventListener('click', () => ui.switchTab('partnerships'));
 
-function focusSearchInput() {
-  const desktopSearch = document.getElementById('quicksearch-desktop');
-  const mobileSearch = document.getElementById('quicksearch-mobile');
-  if (window.innerWidth >= 768 && desktopSearch) {
-    desktopSearch.focus();
-    desktopSearch.select();
-  } else if (mobileSearch) {
-    mobileSearch.focus();
-    mobileSearch.select();
+    // Manipulacao de busca
+    const handleSearch = (val) => {
+      ui.searchQuery = val;
+      if (ui.searchDesktop) ui.searchDesktop.value = val;
+      if (ui.searchMobile) ui.searchMobile.value = val;
+
+      if (val) {
+        if (ui.clearSearchDesktop) ui.clearSearchDesktop.classList.remove('hidden');
+        if (ui.clearSearchMobile) ui.clearSearchMobile.classList.remove('hidden');
+      } else {
+        if (ui.clearSearchDesktop) ui.clearSearchDesktop.classList.add('hidden');
+        if (ui.clearSearchMobile) ui.clearSearchMobile.classList.add('hidden');
+      }
+
+      ui.renderView();
+    };
+
+    if (ui.searchDesktop) ui.searchDesktop.addEventListener('input', (e) => handleSearch(e.target.value));
+    if (ui.searchMobile) ui.searchMobile.addEventListener('input', (e) => handleSearch(e.target.value));
+
+    if (ui.clearSearchDesktop) {
+      ui.clearSearchDesktop.addEventListener('click', () => {
+        handleSearch('');
+        ui.searchDesktop.focus();
+      });
+    }
+    if (ui.clearSearchMobile) {
+      ui.clearSearchMobile.addEventListener('click', () => {
+        handleSearch('');
+        ui.searchMobile.focus();
+      });
+    }
+
+    if (ui.clearFiltersBtn) {
+      ui.clearFiltersBtn.addEventListener('click', () => {
+        handleSearch('');
+        ui.clearFilters();
+      });
+    }
+
+    // Atualiza contadores e renderizacao inicial
+    ui.updateCounters();
+    ui.renderFilterButtons();
+    ui.renderView();
+
+    // Inicializa resolucao de rotas
+    router.init();
+  } catch (err) {
+    console.error('Falha critica ao inicializar o Portal IFSC:', err);
+    const grid = document.getElementById('apps-grid');
+    if (grid) {
+      grid.innerHTML = '';
+      const wrapper = document.createElement('div');
+      wrapper.className = 'col-span-full p-8 text-center bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-red-200 dark:border-red-900/50';
+
+      const title = document.createElement('p');
+      title.className = 'text-red-600 dark:text-red-400 font-semibold mb-2';
+      title.textContent = 'Erro ao inicializar visualização';
+
+      const detail = document.createElement('p');
+      detail.className = 'text-sm text-slate-500 dark:text-slate-400 mb-4';
+      detail.textContent = (err && err.message) ? String(err.message) : 'Tente atualizar a página.';
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'px-4 py-2 bg-[#32a041] hover:bg-[#247a30] text-white rounded-lg text-sm font-medium transition-colors';
+      btn.textContent = 'Recarregar Página';
+      btn.addEventListener('click', () => window.location.reload());
+
+      wrapper.appendChild(title);
+      wrapper.appendChild(detail);
+      wrapper.appendChild(btn);
+      grid.appendChild(wrapper);
+    }
   }
 }
 
-/**
- * Exibe tela de erro amigavel com opcao de recarregar
- */
-function showInitializationError(err) {
-  const grid = document.getElementById('apps-grid');
-  if (grid) {
-    grid.innerHTML = `
-      <div class="col-span-full p-8 text-center bg-white dark:bg-gray-800 rounded-2xl border border-red-200 dark:border-red-900 shadow-sm max-w-lg mx-auto">
-        <i class="bi bi-exclamation-triangle-fill text-red-500 text-3xl mb-3 block"></i>
-        <h3 class="text-base font-bold text-gray-900 dark:text-white mb-2">Erro ao inicializar visualização</h3>
-        <p class="text-xs text-gray-600 dark:text-gray-400 mb-4">${escapeHtml(err?.message || 'Falha ao carregar catálogo.')}</p>
-        <button onclick="window.location.reload()" class="px-4 py-2 bg-[#32a041] hover:bg-[#247a30] text-white font-bold rounded-xl text-xs transition-colors shadow-xs">
-          Recarregar Página
-        </button>
-      </div>
-    `;
-  }
-}
-
-function escapeHtml(str) {
-  if (typeof str !== 'string') return '';
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
-// Inicializa quando o DOM estiver pronto
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initApp);
 } else {
