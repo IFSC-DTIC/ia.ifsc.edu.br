@@ -11,6 +11,8 @@ Allow: /
 Allow: /assets/
 Allow: /public/
 Allow: /termo/
+Allow: /form/
+Allow: /ripd/
 Allow: /favicon.svg
 Allow: /robots.txt
 Allow: /sitemap.xml
