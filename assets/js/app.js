@@ -3,10 +3,10 @@
  * Inicializacao e Orquestracao Modular
  */
 
-import { loadCatalog } from './data/catalog.js?v=20261029v2';
-import { UIController, initAntiSpamEmails } from './modules/ui.js?v=20261029v2';
-import { AppRouter } from './modules/router.js?v=20261029v2';
-import { Analytics } from './modules/analytics.js?v=20261029v2';
+import { loadCatalog } from './data/catalog.js?v=20261029v3';
+import { UIController, initAntiSpamEmails } from './modules/ui.js?v=20261029v3';
+import { AppRouter } from './modules/router.js?v=20261029v3';
+import { Analytics } from './modules/analytics.js?v=20261029v3';
 
 async function initApp() {
   try {
@@ -39,6 +39,26 @@ async function initApp() {
     window.toggleFavorite = (appId, event) => ui.toggleFavorite(appId, event);
     window.copyPortalAppLink = (appId, event) => ui.copyPortalAppLink(appId, event);
     window.trackOt04Access = () => Analytics.trackOt04Access();
+    window.openSurveyModal = (event, source = 'header') => {
+      Analytics.trackSurveyCtaClick(source);
+      ui.openAppModal('form', event);
+    };
+
+    // Botao Institucional da Pesquisa sobre IA no IFSC (Progressive Enhancement)
+    const bindSurveyCta = (el, source) => {
+      if (!el) return;
+      el.addEventListener('click', (e) => {
+        if (!e.ctrlKey && !e.metaKey && !e.shiftKey && e.button === 0) {
+          e.preventDefault();
+          Analytics.trackSurveyCtaClick(source);
+          ui.openAppModal('form', e);
+        } else {
+          Analytics.trackSurveyCtaClick(source);
+        }
+      });
+    };
+    bindSurveyCta(document.getElementById('header-survey-btn'), 'header_desktop');
+    bindSurveyCta(document.getElementById('header-survey-btn-mobile'), 'header_mobile');
 
     // Modal Orientacao Tecnica n. 04/2025
     const ot04Modal = document.getElementById('ot04-modal');
@@ -187,13 +207,28 @@ async function initApp() {
     console.error('Falha critica ao inicializar o Portal IFSC:', err);
     const grid = document.getElementById('apps-grid');
     if (grid) {
-      grid.innerHTML = `
-        <div class="col-span-full p-8 text-center bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-red-200 dark:border-red-900/50">
-          <p class="text-red-600 dark:text-red-400 font-semibold mb-2">Erro ao inicializar visualizacao</p>
-          <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">${err.message || err}</p>
-          <button onclick="window.location.reload()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 text-sm font-medium">Recarregar Pagina</button>
-        </div>
-      `;
+      grid.innerHTML = '';
+      const wrapper = document.createElement('div');
+      wrapper.className = 'col-span-full p-8 text-center bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-red-200 dark:border-red-900/50';
+
+      const title = document.createElement('p');
+      title.className = 'text-red-600 dark:text-red-400 font-semibold mb-2';
+      title.textContent = 'Erro ao inicializar visualização';
+
+      const detail = document.createElement('p');
+      detail.className = 'text-sm text-slate-500 dark:text-slate-400 mb-4';
+      detail.textContent = (err && err.message) ? String(err.message) : 'Tente atualizar a página.';
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'px-4 py-2 bg-[#32a041] hover:bg-[#247a30] text-white rounded-lg text-sm font-medium transition-colors';
+      btn.textContent = 'Recarregar Página';
+      btn.addEventListener('click', () => window.location.reload());
+
+      wrapper.appendChild(title);
+      wrapper.appendChild(detail);
+      wrapper.appendChild(btn);
+      grid.appendChild(wrapper);
     }
   }
 }

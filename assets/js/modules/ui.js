@@ -3,7 +3,7 @@
  * Padrões de Acessibilidade (WCAG 2.1 AA) e Manual da Marca IFSC
  */
 
-import { Analytics } from './analytics.js?v=20261029v2';
+import { Analytics } from './analytics.js?v=20261029v3';
 
 export const tabsMeta = {
   tools: {
@@ -164,6 +164,15 @@ export class UIController {
     }[s]));
   }
 
+  sanitizeUrl(url) {
+    if (!url || typeof url !== 'string') return '#';
+    const trimmed = url.trim();
+    if (/^(https?:\/\/|\.\/|\/)/i.test(trimmed)) {
+      return trimmed;
+    }
+    return '#';
+  }
+
   toggleFavorite(appId, event) {
     if (event) {
       event.preventDefault();
@@ -175,13 +184,21 @@ export class UIController {
     } else {
       this.favorites.push(appId);
     }
-    localStorage.setItem('ifsc_favorites', JSON.stringify(this.favorites));
+    try {
+      localStorage.setItem('ifsc_favorites', JSON.stringify(this.favorites));
+    } catch (_) {}
     this.renderFilterButtons();
     this.renderView();
   }
 
   createCardHTML(app) {
     const isFav = this.favorites.includes(app.id);
+    const safeId = this.escapeHtml(app.id || '');
+    const safeName = this.escapeHtml(app.name || '');
+    const safeDesc = this.escapeHtml(app.description || '');
+    const safeCategoryName = this.escapeHtml(app.categoryName || '');
+    const safeBadgeText = this.escapeHtml(app.badge || app.categoryName || 'Apoio');
+    const safeOpportunity = this.escapeHtml(app.opportunity_plan || '');
 
     const isGoogle = app.platform === 'google' || (app.id && app.id.startsWith('g-')) || (app.tags && app.tags.includes('google'));
     const isMicrosoft = app.platform === 'microsoft' || (app.id && app.id.startsWith('ms-')) || (app.tags && app.tags.includes('microsoft'));
@@ -192,24 +209,23 @@ export class UIController {
           ? 'https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/microsoft-office.png'
           : (isPartner ? './public/img/partner-fallback.svg' : './favicon.svg'));
 
-    const iconMarkup = app.iconUrl
-      ? `<div class="w-11 h-11 rounded-xl flex items-center justify-center p-1.5 bg-white dark:bg-gray-800/90 border border-gray-200/90 dark:border-gray-700 shadow-2xs shrink-0 group-hover:scale-105 transition-transform"><img src="${app.iconUrl}" alt="${app.name}" class="w-8 h-8 object-contain" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='${fallbackSrc}';" /></div>`
+    const safeIconUrl = app.iconUrl ? this.escapeHtml(this.sanitizeUrl(app.iconUrl)) : '';
+    const iconMarkup = safeIconUrl && safeIconUrl !== '#'
+      ? `<div class="w-11 h-11 rounded-xl flex items-center justify-center p-1.5 bg-white dark:bg-gray-800/90 border border-gray-200/90 dark:border-gray-700 shadow-2xs shrink-0 group-hover:scale-105 transition-transform"><img src="${safeIconUrl}" alt="${safeName}" class="w-8 h-8 object-contain" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='${fallbackSrc}';" /></div>`
       : this.getBrandOrGenericIconMarkup(app);
 
-    const badgeText = app.badge || app.categoryName || 'Apoio';
-
     return `
-      <article onclick="window.openAppModal('${app.id}', event)" class="app-card cursor-pointer relative flex flex-col justify-between p-4 bg-white dark:bg-[#121824] border border-gray-200/90 dark:border-gray-800 rounded-2xl shadow-xs hover:shadow-md hover:border-[#32a041] dark:hover:border-[#32a041] transition-all group">
+      <article data-app-id="${safeId}" tabindex="0" role="button" aria-label="Abrir detalhes de ${safeName}" onclick="window.openAppModal('${safeId}', event)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.openAppModal('${safeId}', event);}" class="app-card cursor-pointer relative flex flex-col justify-between p-4 bg-white dark:bg-[#121824] border border-gray-200/90 dark:border-gray-800 rounded-2xl shadow-xs hover:shadow-md hover:border-[#32a041] dark:hover:border-[#32a041] transition-all group">
         <div>
           <!-- Linha Superior: Ícone à esquerda com breve descrição (badge) à sua direita, e botão de favorito -->
           <div class="flex items-center justify-between gap-2 mb-3">
             <div class="flex items-center gap-2.5 min-w-0">
               ${iconMarkup}
               <span class="inline-block text-[10px] font-extrabold uppercase tracking-wider text-[#247a30] dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200/70 dark:border-emerald-800/60 truncate">
-                ${badgeText}
+                ${safeBadgeText}
               </span>
             </div>
-            <button type="button" aria-label="Favoritar" onclick="event.stopPropagation(); window.toggleFavorite('${app.id}', event)"
+            <button type="button" aria-label="Favoritar ${safeName}" onclick="event.stopPropagation(); window.toggleFavorite('${safeId}', event)"
                     class="p-1.5 rounded-lg text-gray-400 hover:text-amber-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0 ${isFav ? '!text-amber-500' : ''}">
               <i class="bi ${isFav ? 'bi-star-fill' : 'bi-star'} text-sm"></i>
             </button>
@@ -217,22 +233,22 @@ export class UIController {
 
           <!-- Título Oficial da Aplicação -->
           <h3 class="text-sm font-bold text-gray-900 dark:text-white leading-snug line-clamp-1 group-hover:text-[#32a041] transition-colors">
-            ${app.name}
+            ${safeName}
           </h3>
 
           <!-- Excerto Breve -->
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5 line-clamp-2 leading-relaxed font-normal">
-            ${app.description}
+            ${safeDesc}
           </p>
 
-          ${app.opportunity_plan ? `
+          ${safeOpportunity ? `
           <div class="mt-2.5 p-2 rounded-xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-[11px] text-amber-900 dark:text-amber-200 font-semibold flex items-start gap-1.5 leading-snug">
             <i class="bi bi-gift-fill text-amber-600 dark:text-amber-400 shrink-0 mt-0.5"></i>
-            <span class="line-clamp-2">${app.opportunity_plan}</span>
+            <span class="line-clamp-2">${safeOpportunity}</span>
           </div>
           ` : (app.access_scope === 'exclusivo_ifsc_form' ? `
-          <div class="mt-2.5 p-2 rounded-xl bg-purple-50/90 dark:bg-purple-950/40 border border-purple-200 dark:border-purple-800/60 text-[11px] text-purple-900 dark:text-purple-200 font-semibold flex items-start gap-1.5 leading-snug">
-            <i class="bi bi-lock-fill text-purple-600 dark:text-purple-400 shrink-0 mt-0.5"></i>
+          <div class="mt-2.5 p-2 rounded-xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/70 text-[11px] text-emerald-900 dark:text-emerald-200 font-semibold flex items-start gap-1.5 leading-snug">
+            <i class="bi bi-shield-lock-fill text-[#32a041] dark:text-emerald-400 shrink-0 mt-0.5"></i>
             <span class="line-clamp-2">Exclusivo: conta @ifsc.edu.br ou @aluno.ifsc.edu.br</span>
           </div>
           ` : '')}
@@ -244,7 +260,7 @@ export class UIController {
             <span>Acessar</span>
             <i class="bi bi-arrow-right text-[11px]"></i>
           </span>
-          <span class="text-[11px] text-gray-400 dark:text-gray-500 truncate max-w-[130px] font-normal">${app.categoryName || ''}</span>
+          <span class="text-[11px] text-gray-400 dark:text-gray-500 truncate max-w-[130px] font-normal">${safeCategoryName}</span>
         </div>
       </article>
     `;
@@ -343,9 +359,11 @@ export class UIController {
         if (!cat) return;
         const isCatActive = this.currentCategory === cat.slug;
         const catCount = Array.isArray(cat.apps) ? cat.apps.length : 0;
+        const safeSlug = this.escapeHtml(cat.slug || '');
+        const safeCatName = this.escapeHtml(cat.name || '');
         html += `
-          <button type="button" data-category="${cat.slug}" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer ${isCatActive ? activeCatClasses : inactiveCatClasses}">
-            ${cat.name} <span class="opacity-70 text-[10px]">(${catCount})</span>
+          <button type="button" data-category="${safeSlug}" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer ${isCatActive ? activeCatClasses : inactiveCatClasses}">
+            ${safeCatName} <span class="opacity-70 text-[10px]">(${catCount})</span>
           </button>
         `;
       });
@@ -596,24 +614,29 @@ export class UIController {
       event.preventDefault();
       event.stopPropagation();
     }
-    const app = this.catalog.appMap[appId];
+    const app = this.catalog.appMap && this.catalog.appMap[appId];
     if (!app) return;
 
     this.currentModalApp = app;
 
-    document.getElementById('modal-app-name').textContent = app.name;
+    const safeName = this.escapeHtml(app.name || '');
+    const safeBadge = this.escapeHtml(app.badge || app.categoryName || 'Aplicação');
+    const safeOpportunity = this.escapeHtml(app.opportunity_plan || '');
+    const safeDomainReq = this.escapeHtml(app.domain_requirement || 'Acesso verificado com e-mail escolar institucional');
+
+    document.getElementById('modal-app-name').textContent = app.name || '';
     const modalDescEl = document.getElementById('modal-app-description');
     if (Array.isArray(app.modalSummaryPoints) && app.modalSummaryPoints.length > 0) {
       modalDescEl.innerHTML = `
         <p class="font-medium text-gray-800 dark:text-gray-100 mb-2">${this.escapeHtml(app.description)}</p>
-        <ul class="space-y-1.5 text-[11px] sm:text-xs text-gray-600 dark:text-gray-300 list-disc pl-4">
+        <ul class="space-y-1.5 text-[11px] sm:text-xs text-gray-600 dark:text-gray-300 list-disc pl-4 text-left">
           ${app.modalSummaryPoints.map(pt => `<li>${this.escapeHtml(pt)}</li>`).join('')}
         </ul>
       `;
     } else {
-      modalDescEl.textContent = app.description;
+      modalDescEl.textContent = app.description || '';
     }
-    this.modalOpenAppBtn.href = app.url;
+    this.modalOpenAppBtn.href = this.sanitizeUrl(app.url);
     const ctaText = this.escapeHtml(app.ctaLabel || 'Abrir Ferramenta');
     this.modalOpenAppBtn.innerHTML = `<span>${ctaText}</span><i class="bi bi-box-arrow-up-right text-xs"></i>`;
 
@@ -633,7 +656,7 @@ export class UIController {
     const isGoogle = (this.catalog.allGoogle || []).some(g => g.id === app.id);
     const isMicrosoft = app.platform === 'microsoft' || (this.catalog.allMicrosoft || []).some(m => m.id === app.id);
 
-    if (app.opportunity_plan) {
+    if (safeOpportunity) {
       this.modalAccessNotice.innerHTML = `
         <div class="p-3.5 rounded-2xl bg-amber-50/90 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700/80 text-left text-xs text-amber-950 dark:text-amber-200 w-full flex items-start gap-3 shadow-2xs">
           <span class="w-7 h-7 rounded-xl bg-amber-500 text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-xs">
@@ -642,39 +665,31 @@ export class UIController {
           <div class="space-y-1">
             <div class="flex items-center gap-1.5 flex-wrap">
               <strong class="font-extrabold text-amber-950 dark:text-amber-100 text-xs">Oportunidade para Estudantes</strong>
-              <span class="px-2 py-0.2 rounded text-[9px] font-black bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200 uppercase tracking-wider">${app.badge || 'Benefício'}</span>
+              <span class="px-2 py-0.2 rounded text-[9px] font-black bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200 uppercase tracking-wider">${safeBadge}</span>
             </div>
             <p class="text-[11px] leading-relaxed text-amber-900 dark:text-amber-200 font-bold">
-              ${app.opportunity_plan}
+              ${safeOpportunity}
             </p>
             <p class="text-[10px] text-amber-800 dark:text-amber-300 flex items-center gap-1 pt-0.5 font-medium">
               <i class="bi bi-check-circle-fill shrink-0 text-amber-600 dark:text-amber-400"></i>
-              <span>${app.domain_requirement || 'Acesso verificado com e-mail escolar institucional'}</span>
+              <span>${safeDomainReq}</span>
             </p>
           </div>
         </div>
       `;
     } else if (isInstitutionalForm) {
       this.modalAccessNotice.innerHTML = `
-        <div class="p-3.5 rounded-2xl bg-purple-50/95 dark:bg-purple-950/45 border border-purple-300 dark:border-purple-800/80 text-left text-xs text-purple-950 dark:text-purple-200 w-full flex items-start gap-3 shadow-2xs">
-          <span class="w-7 h-7 rounded-xl bg-purple-600 text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-xs">
+        <div class="p-3.5 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/70 text-left text-xs text-emerald-950 dark:text-emerald-200 w-full flex items-start gap-3 shadow-2xs">
+          <span class="w-7 h-7 rounded-xl bg-[#32a041] text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-xs">
             <i class="bi bi-shield-lock-fill"></i>
           </span>
-          <div class="space-y-1.5">
+          <div class="space-y-1">
             <div class="flex items-center gap-1.5 flex-wrap">
-              <strong class="font-extrabold text-purple-950 dark:text-purple-100 text-xs">Login Institucional Obrigatório (IFSC)</strong>
-              <span class="px-2 py-0.2 rounded text-[9px] font-black bg-purple-200 dark:bg-purple-900 text-purple-900 dark:text-purple-100 uppercase tracking-wider">Servidor • Estudante</span>
+              <strong class="font-extrabold text-emerald-950 dark:text-emerald-100 text-xs">Login Institucional Obrigatório</strong>
+              <span class="px-2 py-0.2 rounded text-[9px] font-black bg-emerald-200 dark:bg-emerald-900 text-[#247a30] dark:text-emerald-200 uppercase tracking-wider">Servidor • Estudante</span>
             </div>
-            <p class="text-[11px] leading-relaxed text-purple-900 dark:text-purple-300">
-              Para responder ao <strong>Questionário de Maturidade de IA no IFSC</strong> no Google Forms, é necessário estar autenticado no navegador com sua conta institucional oficial:
-            </p>
-            <ul class="space-y-1 text-[11px] list-disc pl-4 text-purple-950 dark:text-purple-200 font-semibold">
-              <li><strong>Servidores (Docentes e TAEs):</strong> <code class="font-mono bg-purple-200/80 dark:bg-purple-900/80 px-1.5 py-0.2 rounded text-purple-950 dark:text-purple-100">@ifsc.edu.br</code></li>
-              <li><strong>Estudantes / Alunos:</strong> <code class="font-mono bg-purple-200/80 dark:bg-purple-900/80 px-1.5 py-0.2 rounded text-purple-950 dark:text-purple-100">@aluno.ifsc.edu.br</code></li>
-            </ul>
-            <p class="text-[11px] font-bold text-red-600 dark:text-red-400 flex items-start gap-1.5 pt-0.5 leading-snug">
-              <i class="bi bi-exclamation-triangle-fill shrink-0 mt-0.5"></i>
-              <span>Contas pessoais (@gmail.com) não possuem permissão de acesso. Se aparecer aviso de restrição, alterne a conta conectada no Google para o seu e-mail do IFSC.</span>
+            <p class="text-[11px] leading-relaxed text-emerald-900 dark:text-emerald-300">
+              Acesse autenticado com <code class="font-mono font-bold bg-emerald-200/80 dark:bg-emerald-900/80 px-1 py-0.2 rounded text-emerald-950 dark:text-emerald-100">@ifsc.edu.br</code> ou <code class="font-mono font-bold bg-emerald-200/80 dark:bg-emerald-900/80 px-1 py-0.2 rounded text-emerald-950 dark:text-emerald-100">@aluno.ifsc.edu.br</code>. Contas <code class="font-mono">@gmail.com</code> pessoais não têm permissão.
             </p>
           </div>
         </div>
@@ -729,10 +744,11 @@ export class UIController {
           : (isPartner ? './public/img/partner-fallback.svg' : './favicon.svg'));
 
     const iconContainer = document.getElementById('modal-icon-container');
-    if (app.iconUrl) {
+    const safeIconUrl = app.iconUrl ? this.escapeHtml(this.sanitizeUrl(app.iconUrl)) : '';
+    if (safeIconUrl && safeIconUrl !== '#') {
       iconContainer.innerHTML = `
         <div class="w-14 h-14 rounded-2xl flex items-center justify-center p-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
-          <img src="${app.iconUrl}" alt="${app.name}" class="w-10 h-10 object-contain" onerror="this.onerror=null; this.src='${modalFallbackSrc}';" />
+          <img src="${safeIconUrl}" alt="${safeName}" class="w-10 h-10 object-contain" onerror="this.onerror=null; this.src='${modalFallbackSrc}';" />
         </div>
       `;
     } else {
@@ -741,7 +757,7 @@ export class UIController {
 
     let modalDomainBadge = '';
     if (isInstitutionalForm) {
-      modalDomainBadge = `<span class="inline-block px-2.5 py-0.5 text-xs font-bold rounded-full text-purple-800 dark:text-purple-300 bg-purple-100 dark:bg-purple-950/80 border border-purple-300 dark:border-purple-800"><i class="bi bi-lock-fill text-[10px] mr-1"></i>Exclusivo @ifsc / @aluno</span>`;
+      modalDomainBadge = `<span class="inline-block px-2.5 py-0.5 text-xs font-bold rounded-full text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-800"><i class="bi bi-shield-lock-fill text-[10px] mr-1"></i>Exclusivo @ifsc / @aluno</span>`;
     } else if (isTool) {
       modalDomainBadge = `<span class="inline-block px-2.5 py-0.5 text-xs font-bold rounded-full text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-800"><i class="bi bi-globe2 text-[10px] mr-1"></i>Público (@gmail.com)</span>`;
     } else if (isGoogle) {
@@ -752,13 +768,14 @@ export class UIController {
 
     document.getElementById('modal-badge-container').innerHTML = `
       <span class="inline-block px-2.5 py-0.5 text-xs font-bold rounded-full text-[#247a30] dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800">
-        ${app.badge || app.categoryName}
+        ${safeBadge}
       </span>
       ${modalDomainBadge}
     `;
 
     this.shareBtnText.textContent = 'Copiar Link';
 
+    this.modal.setAttribute('aria-hidden', 'false');
     this.modal.classList.remove('pointer-events-none');
     this.modal.classList.add('opacity-100');
     this.modalContent.classList.remove('scale-95');
@@ -766,6 +783,7 @@ export class UIController {
   }
 
   closeModal() {
+    this.modal.setAttribute('aria-hidden', 'true');
     this.modal.classList.remove('opacity-100');
     this.modalContent.classList.remove('scale-100');
     this.modalContent.classList.add('scale-95');
