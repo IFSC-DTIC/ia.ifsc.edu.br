@@ -221,7 +221,7 @@ export const defaultToolsCategories = [
         "shortRoute": "/form",
         "ctaLabel": "Responder Questionário",
         "name": "Questionário de Maturidade de IA no IFSC",
-        "url": "https://docs.google.com/forms/d/e/1FAIpQLSczGBSLNXR7lwmbdHzFxERm9NnTh40dQL473tAIoK2_v7ekQw/viewform?usp=sharing&ouid=113323964168701114446",
+        "url": "https://s.ifsc.edu.br/azN7Tw",
         "badge": "Diagnóstico IA • IFSC",
         "iconKey": "pesquisa",
         "description": "Diagnóstico institucional sobre o uso, capacitação e demandas de Inteligência Artificial no IFSC (~5 min).",
