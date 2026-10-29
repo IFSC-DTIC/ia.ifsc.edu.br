@@ -4,7 +4,7 @@
    <!-- Página Inicial Oficial - Portal de IA do IFSC -->
    <url>
       <loc>https://ia.ifsc.edu.br/</loc>
-      <lastmod>2026-10-14</lastmod>
+      <lastmod>2026-10-29</lastmod>
       <changefreq>daily</changefreq>
       <priority>1.0</priority>
       <image:image>
@@ -21,39 +21,49 @@
    <!-- Gerador de Termos de Consentimento LGPD / ECA Digital -->
    <url>
       <loc>https://ia.ifsc.edu.br/termo/</loc>
-      <lastmod>2026-10-14</lastmod>
+      <lastmod>2026-10-29</lastmod>
       <changefreq>weekly</changefreq>
       <priority>0.9</priority>
+   </url>
+
+   <!-- Questionário de Maturidade de IA no IFSC (Exclusivo @ifsc.edu.br e @aluno.ifsc.edu.br) -->
+   <url>
+      <loc>https://ia.ifsc.edu.br/form</loc>
+      <lastmod>2026-10-29</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>0.9</priority>
+   </url>
+
+   <!-- Gerador de Relatórios de Impacto à Proteção de Dados (Form2RIPD) -->
+   <url>
+      <loc>https://ia.ifsc.edu.br/ripd</loc>
+      <lastmod>2026-10-29</lastmod>
+      <changefreq>monthly</changefreq>
+      <priority>0.8</priority>
    </url>
 
    <!-- Abas do Portal (Conforme Orientação Técnica nº 04/2025 da DTIC/CGD) -->
    <url>
       <loc>https://ia.ifsc.edu.br/?tab=tools</loc>
-      <lastmod>2026-10-14</lastmod>
-      <changefreq>weekly</changefreq>
-      <priority>0.9</priority>
-   </url>
-   <url>
-      <loc>https://ia.ifsc.edu.br/?tab=experts</loc>
-      <lastmod>2026-10-14</lastmod>
+      <lastmod>2026-10-29</lastmod>
       <changefreq>weekly</changefreq>
       <priority>0.9</priority>
    </url>
    <url>
       <loc>https://ia.ifsc.edu.br/?tab=partnerships</loc>
-      <lastmod>2026-10-14</lastmod>
+      <lastmod>2026-10-29</lastmod>
       <changefreq>weekly</changefreq>
       <priority>0.9</priority>
    </url>
    <url>
       <loc>https://ia.ifsc.edu.br/?tab=google</loc>
-      <lastmod>2026-10-14</lastmod>
+      <lastmod>2026-10-29</lastmod>
       <changefreq>weekly</changefreq>
       <priority>0.9</priority>
    </url>
    <url>
       <loc>https://ia.ifsc.edu.br/?tab=microsoft</loc>
-      <lastmod>2026-10-14</lastmod>
+      <lastmod>2026-10-29</lastmod>
       <changefreq>weekly</changefreq>
       <priority>0.9</priority>
    </url>
@@ -85,38 +95,12 @@
    </url>
    <url>
       <loc>https://ia.ifsc.edu.br/?app=ripd</loc>
-      <lastmod>2026-10-14</lastmod>
+      <lastmod>2026-10-29</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.8</priority>
    </url>
    <url>
       <loc>https://ia.ifsc.edu.br/?app=mapeamento</loc>
-      <lastmod>2026-10-14</lastmod>
-      <changefreq>monthly</changefreq>
-      <priority>0.8</priority>
-   </url>
-
-   <!-- Agentes Especialistas Gems IFSC -->
-   <url>
-      <loc>https://ia.ifsc.edu.br/?app=agent-sibi</loc>
-      <lastmod>2026-10-14</lastmod>
-      <changefreq>monthly</changefreq>
-      <priority>0.8</priority>
-   </url>
-   <url>
-      <loc>https://ia.ifsc.edu.br/?app=agent-srp</loc>
-      <lastmod>2026-10-14</lastmod>
-      <changefreq>monthly</changefreq>
-      <priority>0.8</priority>
-   </url>
-   <url>
-      <loc>https://ia.ifsc.edu.br/?app=agent-dgp</loc>
-      <lastmod>2026-10-14</lastmod>
-      <changefreq>monthly</changefreq>
-      <priority>0.8</priority>
-   </url>
-   <url>
-      <loc>https://ia.ifsc.edu.br/?app=agent-cgd</loc>
       <lastmod>2026-10-14</lastmod>
       <changefreq>monthly</changefreq>
       <priority>0.8</priority>
