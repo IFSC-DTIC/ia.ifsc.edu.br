@@ -59,6 +59,7 @@
       },
       {
         "id": "ripd",
+        "shortRoute": "/ripd",
         "name": "IFSC-DTIC-CGD: Form2RIPD",
         "url": "https://ai.studio/apps/drive/1fv20kTnlkPYefuOFIXP2bEo3ld8p8th7?showAssistant=true&showPreview=true&fullscreenApplet=true",
         "badge": "Gerador RIPD",
@@ -68,6 +69,7 @@
         "safety_rating": "LGPD OK",
         "tags": [
           "ripd",
+          "form2ripd",
           "lgpd",
           "relatório de impacto",
           "cgd",
@@ -242,6 +244,46 @@
     "slug": "administrativo",
     "iconKey": "siads",
     "apps": [
+      {
+        "id": "form",
+        "shortRoute": "/form",
+        "ctaLabel": "Responder Questionário",
+        "name": "Questionário de Maturidade de IA no IFSC",
+        "url": "https://docs.google.com/forms/d/e/1FAIpQLSczGBSLNXR7lwmbdHzFxERm9NnTh40dQL473tAIoK2_v7ekQw/viewform?usp=sharing&ouid=113323964168701114446",
+        "badge": "Diagnóstico IA • IFSC",
+        "iconKey": "pesquisa",
+        "description": "Diagnóstico institucional sobre o nível de adoção, letramento, governança ética e demandas de Inteligência Artificial no ensino, pesquisa, extensão e gestão do IFSC.",
+        "modalSummaryPoints": [
+          "Objetivo estratégico: mapear práticas atuais, necessidades de capacitação, infraestrutura e ferramentas de IA prioritárias para o planejamento institucional do IFSC.",
+          "Público participante: servidores (docentes e técnicos administrativos) e estudantes regularmente vinculados ao Instituto.",
+          "Conformidade e privacidade: levantamento conduzido em alinhamento à Orientação Técnica nº 04/2025 (DTIC/CGD) e à LGPD, com preenchimento estimado em cerca de 5 minutos."
+        ],
+        "ot04_status": "Pesquisa Oficial IFSC",
+        "safety_rating": "LGPD OK",
+        "tags": [
+          "form",
+          "formulário",
+          "questionário",
+          "maturidade",
+          "pesquisa",
+          "diagnóstico",
+          "governança",
+          "ia",
+          "ot04",
+          "dtic",
+          "cgd",
+          "servidores",
+          "alunos",
+          "estudantes",
+          "ifsc"
+        ],
+        "access_scope": "exclusivo_ifsc_form",
+        "domain_requirement": "Exclusivo IFSC: requer conta institucional @ifsc.edu.br (servidores) ou @aluno.ifsc.edu.br (estudantes)",
+        "audiences": [
+          "servidores",
+          "alunos"
+        ]
+      },
       {
         "id": "padronizacao",
         "name": "Ferramenta de Padronização de Inventário",
