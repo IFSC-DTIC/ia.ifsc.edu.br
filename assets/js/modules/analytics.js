@@ -5,9 +5,9 @@
 
 export const Analytics = {
   /**
-   * Dispara evento de clique na abertura da ferramenta
-   * @param {Object} app Dados do aplicativo/agente
-   */
+    * Dispara evento de clique na abertura da ferramenta
+    * @param {Object} app Dados do aplicativo/agente
+    */
   trackAppClick(app) {
     if (!app) return;
 
@@ -97,6 +97,25 @@ export const Analytics = {
     }
     if (typeof window.clarity === 'function') {
       window.clarity('set', 'filter_audience', audience);
+    }
+  },
+
+  /**
+   * Rastreia cliques no botao institucional de participacao na Pesquisa de IA (/form)
+   * @param {string} source Origem do clique (ex: header_desktop, header_mobile)
+   */
+  trackSurveyCtaClick(source = 'header') {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'survey_cta_click', {
+        cta_source: source,
+        target_route: '/form',
+        event_category: 'Pesquisa Maturidade IA IFSC',
+        transport_type: 'beacon'
+      });
+    }
+    if (typeof window.clarity === 'function') {
+      window.clarity('event', 'survey_cta_clicked');
+      window.clarity('set', 'survey_cta_source', source);
     }
   }
 };
