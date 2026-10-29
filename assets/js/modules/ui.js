@@ -3,7 +3,7 @@
  * Padrões de Acessibilidade (WCAG 2.1 AA) e Manual da Marca IFSC
  */
 
-import { Analytics } from './analytics.js?v=20261029v3';
+import { Analytics } from './analytics.js?v=20261029v4';
 
 export const tabsMeta = {
   tools: {
@@ -691,6 +691,10 @@ export class UIController {
             <p class="text-[11px] leading-relaxed text-emerald-900 dark:text-emerald-300">
               Acesse autenticado com <code class="font-mono font-bold bg-emerald-200/80 dark:bg-emerald-900/80 px-1 py-0.2 rounded text-emerald-950 dark:text-emerald-100">@ifsc.edu.br</code> ou <code class="font-mono font-bold bg-emerald-200/80 dark:bg-emerald-900/80 px-1 py-0.2 rounded text-emerald-950 dark:text-emerald-100">@aluno.ifsc.edu.br</code>. Contas <code class="font-mono">@gmail.com</code> pessoais não têm permissão.
             </p>
+            <p class="text-[10.5px] leading-relaxed text-emerald-800 dark:text-emerald-300 pt-0.5">
+              <i class="bi bi-info-circle-fill text-[#32a041] dark:text-emerald-400 mr-1"></i>
+              <span><strong>Estudantes:</strong> acesse sua conta Gmail institucional usando o mesmo login e senha do SIGAA (<a href="https://www.ifsc.edu.br/servicos-de-tecnologia" target="_blank" rel="noopener noreferrer" class="font-bold underline text-[#247a30] dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-100 inline-flex items-center gap-0.5">instruções de acesso ao e-mail institucional<i class="bi bi-box-arrow-up-right text-[9px] ml-0.5"></i></a>).</span>
+            </p>
           </div>
         </div>
       `;
@@ -711,6 +715,9 @@ export class UIController {
             <p class="text-[10px] font-medium text-emerald-800 dark:text-emerald-400 flex items-center gap-1 pt-0.5">
               <i class="bi bi-shield-check shrink-0"></i>
               <span>Diretriz OT 04/2025: Proibida inserção de dados sensíveis; respostas exigem validação humana.</span>
+            </p>
+            <p class="text-[10px] text-emerald-800 dark:text-emerald-400 pt-0.5">
+              <span>Estudantes acessam o Gmail institucional com usuário e senha do SIGAA (<a href="https://www.ifsc.edu.br/servicos-de-tecnologia" target="_blank" rel="noopener noreferrer" class="underline font-bold hover:text-emerald-950 dark:hover:text-emerald-200">instruções</a>).</span>
             </p>
           </div>
         </div>
@@ -820,5 +827,75 @@ export class UIController {
     if (gCount) gCount.textContent = (this.catalog.allGoogle || []).length;
     if (mCount) mCount.textContent = (this.catalog.allMicrosoft || []).length;
     if (pCount) pCount.textContent = (this.catalog.allPartnerships || []).length;
+  }
+
+  initEventListeners() {
+    // Abas de Plataforma / Ecossistema
+    if (this.tabToolsBtn) this.tabToolsBtn.addEventListener('click', () => this.switchTab('tools'));
+    if (this.tabGoogleBtn) this.tabGoogleBtn.addEventListener('click', () => this.switchTab('google'));
+    if (this.tabMicrosoftBtn) this.tabMicrosoftBtn.addEventListener('click', () => this.switchTab('microsoft'));
+    if (this.tabPartnershipsBtn) this.tabPartnershipsBtn.addEventListener('click', () => this.switchTab('partnerships'));
+
+    // Fechar Modal
+    if (this.closeModalBtn) this.closeModalBtn.addEventListener('click', () => this.closeModal());
+    if (this.modalBackdrop) this.modalBackdrop.addEventListener('click', () => this.closeModal());
+
+    // Compartilhar / Copiar Link no Modal
+    if (this.modalShareBtn) {
+      this.modalShareBtn.addEventListener('click', () => {
+        if (!this.currentModalApp) return;
+        const app = this.currentModalApp;
+        const shareUrl = app.shortRoute
+          ? `${window.location.origin}${app.shortRoute}`
+          : `${window.location.origin}/?app=${encodeURIComponent(app.id)}`;
+
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(shareUrl).then(() => {
+            this.shareBtnText.textContent = 'Copiado!';
+            setTimeout(() => {
+              this.shareBtnText.textContent = 'Copiar Link';
+            }, 2000);
+          });
+        }
+      });
+    }
+
+    // Busca Rápida (Desktop & Mobile)
+    const handleSearch = (e) => {
+      this.searchQuery = e.target.value;
+      if (this.searchDesktop && this.searchDesktop !== e.target) this.searchDesktop.value = this.searchQuery;
+      if (this.searchMobile && this.searchMobile !== e.target) this.searchMobile.value = this.searchQuery;
+
+      const hasVal = Boolean(this.searchQuery);
+      if (this.clearSearchDesktop) this.clearSearchDesktop.classList.toggle('hidden', !hasVal);
+      if (this.clearSearchMobile) this.clearSearchMobile.classList.toggle('hidden', !hasVal);
+
+      this.renderView();
+    };
+
+    if (this.searchDesktop) this.searchDesktop.addEventListener('input', handleSearch);
+    if (this.searchMobile) this.searchMobile.addEventListener('input', handleSearch);
+
+    const clearSearch = () => {
+      this.searchQuery = '';
+      if (this.searchDesktop) this.searchDesktop.value = '';
+      if (this.searchMobile) this.searchMobile.value = '';
+      if (this.clearSearchDesktop) this.clearSearchDesktop.classList.add('hidden');
+      if (this.clearSearchMobile) this.clearSearchMobile.classList.add('hidden');
+      this.renderView();
+    };
+
+    if (this.clearSearchDesktop) this.clearSearchDesktop.addEventListener('click', clearSearch);
+    if (this.clearSearchMobile) this.clearSearchMobile.addEventListener('click', clearSearch);
+
+    if (this.clearFiltersBtn) {
+      this.clearFiltersBtn.addEventListener('click', () => this.clearFilters());
+    }
+  }
+
+  render() {
+    this.updateCounters();
+    this.renderFilterButtons();
+    this.renderView();
   }
 }
