@@ -121,11 +121,11 @@ export class AppRouter {
         const target = this.resolveApp(reqApp);
         if (target) {
           // Alternar automaticamente para a aba correta
-          if (this.catalog.allGoogle.some(g => g.id === target.id)) {
+          if ((this.catalog.allGoogle || []).some(g => g.id === target.id)) {
             this.ui.switchTab('google');
-          } else if (this.catalog.allMicrosoft.some(m => m.id === target.id)) {
+          } else if ((this.catalog.allMicrosoft || []).some(m => m.id === target.id)) {
             this.ui.switchTab('microsoft');
-          } else if (this.catalog.allPartnerships && this.catalog.allPartnerships.some(p => p.id === target.id)) {
+          } else if ((this.catalog.allPartnerships || []).some(p => p.id === target.id)) {
             this.ui.switchTab('partnerships');
           } else {
             this.ui.switchTab('tools');

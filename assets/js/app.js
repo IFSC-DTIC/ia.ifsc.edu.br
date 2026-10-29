@@ -3,10 +3,10 @@
  * Inicializacao e Orquestracao Modular
  */
 
-import { loadCatalog } from './data/catalog.js';
-import { UIController, initAntiSpamEmails } from './modules/ui.js';
-import { AppRouter } from './modules/router.js';
-import { Analytics } from './modules/analytics.js';
+import { loadCatalog } from './data/catalog.js?v=20261029v2';
+import { UIController, initAntiSpamEmails } from './modules/ui.js?v=20261029v2';
+import { AppRouter } from './modules/router.js?v=20261029v2';
+import { Analytics } from './modules/analytics.js?v=20261029v2';
 
 async function initApp() {
   try {

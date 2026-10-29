@@ -993,10 +993,12 @@ export async function loadCatalog() {
 
   return {
     toolsCategories,
+    gemsCategories: [],
     googleEduCategories,
     microsoftCategories,
     partnershipsCategories,
     allTools,
+    allExperts: [],
     allGoogle,
     allMicrosoft,
     allPartnerships,
