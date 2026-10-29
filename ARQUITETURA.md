@@ -35,9 +35,9 @@ O portal opera sob a filosofia **Zero-Backend (Vanilla ES6 Modules)**. Hospedado
 
 Em hospedagem estática no GitHub Pages, o portal combina **entrypoints estáticos dedicados (HTTP 200 + SEO/OpenGraph)** com o roteador SPA (`assets/js/modules/router.js` e fallback `404.html`):
 
-1. **`/form` (`form/index.html` ➔ `/?app=form&tab=tools`):**
-   - Abre a caixa suspensa (*modal*) do **Questionário de Maturidade de IA no IFSC** (`id: "form"` em `apps.json`, `access_scope: "exclusivo_ifsc_form"`).
-   - Exibe resumo executivo da pesquisa e alerta destacado exigindo autenticação institucional **`@ifsc.edu.br`** (servidores) ou **`@aluno.ifsc.edu.br`** (estudantes) antes de prosseguir ao Google Forms oficial.
+1. **`/form` (`form/index.html` ➔ `/?app=form&tab=tools`) e CTA de Topo (`#header-survey-btn`):**
+   - Acionável diretamente pelo botão **Participe da Pesquisa sobre IA no IFSC** no cabeçalho (ao lado de *Diretrizes conforme OT 04/2025*, com layout responsivo mobile/desktop e *progressive enhancement*) ou pela rota curta `/form`.
+   - Abre a caixa suspensa (*modal*) concisa do **Questionário de Maturidade de IA no IFSC** (`id: "form"` em `apps.json`, `access_scope: "exclusivo_ifsc_form"`), padronizada na identidade visual verde institucional (`#32a041` / `emerald`) como as demais aplicações homologadas, destacando a exigência de conta **`@ifsc.edu.br`** ou **`@aluno.ifsc.edu.br`**.
 2. **`/ripd` (`ripd/index.html` ➔ `/?app=ripd&tab=tools`):**
    - Abre a caixa suspensa da aplicação **IFSC-DTIC-CGD: Form2RIPD** (`id: "ripd"` em `apps.json`), dedicada à elaboração de Relatórios de Impacto à Proteção de Dados (LGPD).
 3. **`/termo/` (`termo/index.html`):**
@@ -62,5 +62,7 @@ Para garantir estabilidade arquitetural e conformidade jurídica quando agentes 
 - Categorias da aba **Aplicações com IA**: `LGPD`, `Processos`, `Administrativo`, `Gestão de Pessoas`.
 - O módulo legado de *Agentes Especialistas (Gems)* permanece desativado em produção e isolado em `archive/agentes-especialistas-gems` até eventual homologação do modelo de **Skills**.
 
-### D. Privacy-by-Design e Client-Side Limits
-- Proibido inserir *trackers* não homologados, coletar prompts de usuários ou versionar chaves de API / arquivos `.env`.
+### D. Padrões de Codificação, Cache-Busting e Segurança Client-Side
+- **Versionamento de Módulos ES6 (`?v=...`):** Sempre que módulos em `assets/js/` ou `assets/css/` sofrerem alterações estruturais, incrementar o sufixo de *cache-busting* nas importações ES6 (`index.html`, `app.js` e `ui.js`) para evitar *version skew* na CDN do GitHub Pages.
+- **Sanitização e Acessibilidade (WCAG 2.1 AA):** Utilizar obrigatoriamente `escapeHtml()`, `textContent` e `sanitizeUrl()` em qualquer dado oriundo de JSON/URL, mantendo suporte a teclado (`tabindex="0"`, `Enter`/`Space`, `Escape`) e atributos `aria-*` em cards e modais.
+- **Privacy-by-Design:** Proibido inserir *trackers* não homologados, coletar prompts de usuários, disparar logs de cliente em produção ou versionar chaves de API / arquivos `.env`.
