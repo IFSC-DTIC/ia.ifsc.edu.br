@@ -3,7 +3,7 @@
  * Padrões de Acessibilidade (WCAG 2.1 AA) e Manual da Marca IFSC
  */
 
-import { Analytics } from './analytics.js?v=20261029v4';
+import { Analytics } from './analytics.js?v=20261030v1';
 
 export const tabsMeta = {
   tools: {
@@ -55,6 +55,83 @@ export function initAntiSpamEmails() {
   });
 }
 
+/**
+ * Gerenciador de Focus Trap para Acessibilidade nos Modais (WCAG 2.1 AA)
+ * Captura a navegação por Tab/Shift+Tab dentro do modal ativo e devolve
+ * o foco ao elemento acionador original ao fechar.
+ */
+export class FocusTrap {
+  constructor(modalElement, onEscape) {
+    this.modal = modalElement;
+    this.onEscape = onEscape;
+    this.previousFocusedElement = null;
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+  }
+
+  activate() {
+    this.previousFocusedElement = document.activeElement;
+    if (this.modal) {
+      this.modal.addEventListener('keydown', this.handleKeyDown);
+      setTimeout(() => {
+        const focusable = this.getFocusableElements();
+        if (focusable.length > 0) {
+          focusable[0].focus();
+        }
+      }, 60);
+    }
+  }
+
+  deactivate() {
+    if (this.modal) {
+      this.modal.removeEventListener('keydown', this.handleKeyDown);
+    }
+    if (this.previousFocusedElement && typeof this.previousFocusedElement.focus === 'function') {
+      try {
+        this.previousFocusedElement.focus();
+      } catch (_) {}
+    }
+    this.previousFocusedElement = null;
+  }
+
+  getFocusableElements() {
+    if (!this.modal) return [];
+    const selector = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    return Array.from(this.modal.querySelectorAll(selector)).filter(el => {
+      return el.offsetWidth > 0 || el.offsetHeight > 0 || el === document.activeElement;
+    });
+  }
+
+  handleKeyDown(e) {
+    if (e.key === 'Escape' && typeof this.onEscape === 'function') {
+      e.preventDefault();
+      this.onEscape();
+      return;
+    }
+
+    if (e.key === 'Tab') {
+      const focusable = this.getFocusableElements();
+      if (focusable.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first || !this.modal.contains(document.activeElement)) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last || !this.modal.contains(document.activeElement)) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+  }
+}
+
 export class UIController {
   constructor(catalog) {
     this.catalog = catalog;
@@ -63,6 +140,7 @@ export class UIController {
     this.currentCategory = 'all';  // 'all' ou slug da categoria
     this.currentFilter = 'all';    // 'all' ou 'favs'
     this.searchQuery = '';
+    this.focusTrap = null;
     try {
       const parsedFavs = JSON.parse(localStorage.getItem('ifsc_favorites') || '[]');
       this.favorites = Array.isArray(parsedFavs) ? parsedFavs : [];
@@ -306,29 +384,29 @@ export class UIController {
             <span>Público:</span>
           </span>
 
-          <button type="button" data-audience="all" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer ${(!isFavActive && this.currentAudience === 'all') ? activeAudClasses : inactiveAudClasses}">
+          <button type="button" data-audience="all" aria-pressed="${(!isFavActive && this.currentAudience === 'all') ? 'true' : 'false'}" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer ${(!isFavActive && this.currentAudience === 'all') ? activeAudClasses : inactiveAudClasses}">
             Todos <span class="opacity-80 text-[10px]">(${countAll})</span>
           </button>
 
-          <button type="button" data-audience="servidores" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${(!isFavActive && this.currentAudience === 'servidores') ? activeAudClasses : inactiveAudClasses}" title="Servidores do IFSC (TAEs e Docentes)">
+          <button type="button" data-audience="servidores" aria-pressed="${(!isFavActive && this.currentAudience === 'servidores') ? 'true' : 'false'}" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${(!isFavActive && this.currentAudience === 'servidores') ? activeAudClasses : inactiveAudClasses}" title="Servidores do IFSC (TAEs e Docentes)">
             <i class="bi bi-person-badge text-[11px]"></i>
             <span>Servidores</span>
             <span class="opacity-80 text-[10px]">(${countServ})</span>
           </button>
 
-          <button type="button" data-audience="alunos" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${(!isFavActive && this.currentAudience === 'alunos') ? activeAudClasses : inactiveAudClasses}" title="Estudantes do IFSC">
+          <button type="button" data-audience="alunos" aria-pressed="${(!isFavActive && this.currentAudience === 'alunos') ? 'true' : 'false'}" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${(!isFavActive && this.currentAudience === 'alunos') ? activeAudClasses : inactiveAudClasses}" title="Estudantes do IFSC">
             <i class="bi bi-backpack text-[11px]"></i>
             <span>Alunos</span>
             <span class="opacity-80 text-[10px]">(${countAlun})</span>
           </button>
 
-          <button type="button" data-audience="comunidade" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${(!isFavActive && this.currentAudience === 'comunidade') ? activeAudClasses : inactiveAudClasses}" title="Comunidade externa">
+          <button type="button" data-audience="comunidade" aria-pressed="${(!isFavActive && this.currentAudience === 'comunidade') ? 'true' : 'false'}" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${(!isFavActive && this.currentAudience === 'comunidade') ? activeAudClasses : inactiveAudClasses}" title="Comunidade externa">
             <i class="bi bi-globe2 text-[11px]"></i>
             <span>Comunidade</span>
             <span class="opacity-80 text-[10px]">(${countComu})</span>
           </button>
 
-          <button type="button" data-filter="favs" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${isFavActive ? activeAudClasses : inactiveAudClasses}">
+          <button type="button" data-filter="favs" aria-pressed="${isFavActive ? 'true' : 'false'}" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1 ${isFavActive ? activeAudClasses : inactiveAudClasses}">
             <i class="bi bi-star-fill text-[10px] ${isFavActive ? 'text-amber-200' : 'text-amber-500'}"></i>
             <span>Favoritos</span>
             <span class="opacity-80 text-[10px]">(${countFavs})</span>
@@ -350,7 +428,7 @@ export class UIController {
             <span>Área:</span>
           </span>
 
-          <button type="button" data-category="all" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer ${this.currentCategory === 'all' ? activeCatClasses : inactiveCatClasses}">
+          <button type="button" data-category="all" aria-pressed="${this.currentCategory === 'all' ? 'true' : 'false'}" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer ${this.currentCategory === 'all' ? activeCatClasses : inactiveCatClasses}">
             Todas
           </button>
       `;
@@ -362,7 +440,7 @@ export class UIController {
         const safeSlug = this.escapeHtml(cat.slug || '');
         const safeCatName = this.escapeHtml(cat.name || '');
         html += `
-          <button type="button" data-category="${safeSlug}" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer ${isCatActive ? activeCatClasses : inactiveCatClasses}">
+          <button type="button" data-category="${safeSlug}" aria-pressed="${isCatActive ? 'true' : 'false'}" class="text-xs py-1 px-2.5 rounded-lg border transition-all cursor-pointer ${isCatActive ? activeCatClasses : inactiveCatClasses}">
             ${safeCatName} <span class="opacity-70 text-[10px]">(${catCount})</span>
           </button>
         `;
@@ -554,6 +632,22 @@ export class UIController {
     if (q) {
       Analytics.trackSearch(q, filtered.length);
     }
+
+    // Acessibilidade: Atualiza região aria-live polite para leitores de tela
+    const announcer = document.getElementById('search-announcer');
+    if (announcer) {
+      if (q) {
+        if (filtered.length === 0) {
+          announcer.textContent = `Nenhum resultado encontrado para "${q}".`;
+        } else if (filtered.length === 1) {
+          announcer.textContent = `1 ferramenta encontrada para "${q}".`;
+        } else {
+          announcer.textContent = `${filtered.length} ferramentas encontradas para "${q}".`;
+        }
+      } else {
+        announcer.textContent = '';
+      }
+    }
   }
 
   switchTab(tab) {
@@ -662,7 +756,7 @@ export class UIController {
           <span class="w-7 h-7 rounded-xl bg-amber-500 text-white flex items-center justify-center text-xs shrink-0 mt-0.5 shadow-xs">
             <i class="bi bi-mortarboard-fill"></i>
           </span>
-          <div class="space-y-1">
+          <div class="space-y-1 w-full">
             <div class="flex items-center gap-1.5 flex-wrap">
               <strong class="font-extrabold text-amber-950 dark:text-amber-100 text-xs">Oportunidade para Estudantes</strong>
               <span class="px-2 py-0.2 rounded text-[9px] font-black bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200 uppercase tracking-wider">${safeBadge}</span>
@@ -674,6 +768,12 @@ export class UIController {
               <i class="bi bi-check-circle-fill shrink-0 text-amber-600 dark:text-amber-400"></i>
               <span>${safeDomainReq}</span>
             </p>
+            <div class="mt-2 pt-2 border-t border-amber-200/80 dark:border-amber-800/60 text-[10px] text-amber-900/90 dark:text-amber-200/90 leading-relaxed">
+              <p class="flex items-start gap-1">
+                <i class="bi bi-shield-exclamation text-amber-700 dark:text-amber-400 shrink-0 mt-0.5"></i>
+                <span><strong>Termos de Terceiros & Isenção IFSC:</strong> O IFSC atua exclusivamente na divulgação educacional e isenta-se de responsabilidade por alterações unilaterais em ofertas, planos, preços ou regras de parceiros. Ao prosseguir, aplicam-se integralmente os Termos de Uso e Política de Privacidade do provedor externo. Consulte as diretrizes de governança na <a href="https://www.ifsc.edu.br/en/lgpd-lei-geral-de-protecao-de-dados" target="_blank" rel="noopener noreferrer" class="underline font-bold text-amber-950 dark:text-amber-100 hover:text-amber-700 inline-flex items-center gap-0.5">LGPD no IFSC<i class="bi bi-box-arrow-up-right text-[8px] ml-0.5"></i></a>.</span>
+              </p>
+            </div>
           </div>
         </div>
       `;
@@ -787,9 +887,20 @@ export class UIController {
     this.modal.classList.add('opacity-100');
     this.modalContent.classList.remove('scale-95');
     this.modalContent.classList.add('scale-100');
+
+    // Acessibilidade: Ativa Focus Trap no modal
+    if (!this.focusTrap) {
+      this.focusTrap = new FocusTrap(this.modal, () => this.closeModal());
+    }
+    this.focusTrap.activate();
   }
 
   closeModal() {
+    if (this.focusTrap) {
+      this.focusTrap.deactivate();
+      this.focusTrap = null;
+    }
+
     this.modal.setAttribute('aria-hidden', 'true');
     this.modal.classList.remove('opacity-100');
     this.modalContent.classList.remove('scale-100');
@@ -827,75 +938,5 @@ export class UIController {
     if (gCount) gCount.textContent = (this.catalog.allGoogle || []).length;
     if (mCount) mCount.textContent = (this.catalog.allMicrosoft || []).length;
     if (pCount) pCount.textContent = (this.catalog.allPartnerships || []).length;
-  }
-
-  initEventListeners() {
-    // Abas de Plataforma / Ecossistema
-    if (this.tabToolsBtn) this.tabToolsBtn.addEventListener('click', () => this.switchTab('tools'));
-    if (this.tabGoogleBtn) this.tabGoogleBtn.addEventListener('click', () => this.switchTab('google'));
-    if (this.tabMicrosoftBtn) this.tabMicrosoftBtn.addEventListener('click', () => this.switchTab('microsoft'));
-    if (this.tabPartnershipsBtn) this.tabPartnershipsBtn.addEventListener('click', () => this.switchTab('partnerships'));
-
-    // Fechar Modal
-    if (this.closeModalBtn) this.closeModalBtn.addEventListener('click', () => this.closeModal());
-    if (this.modalBackdrop) this.modalBackdrop.addEventListener('click', () => this.closeModal());
-
-    // Compartilhar / Copiar Link no Modal
-    if (this.modalShareBtn) {
-      this.modalShareBtn.addEventListener('click', () => {
-        if (!this.currentModalApp) return;
-        const app = this.currentModalApp;
-        const shareUrl = app.shortRoute
-          ? `${window.location.origin}${app.shortRoute}`
-          : `${window.location.origin}/?app=${encodeURIComponent(app.id)}`;
-
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(shareUrl).then(() => {
-            this.shareBtnText.textContent = 'Copiado!';
-            setTimeout(() => {
-              this.shareBtnText.textContent = 'Copiar Link';
-            }, 2000);
-          });
-        }
-      });
-    }
-
-    // Busca Rápida (Desktop & Mobile)
-    const handleSearch = (e) => {
-      this.searchQuery = e.target.value;
-      if (this.searchDesktop && this.searchDesktop !== e.target) this.searchDesktop.value = this.searchQuery;
-      if (this.searchMobile && this.searchMobile !== e.target) this.searchMobile.value = this.searchQuery;
-
-      const hasVal = Boolean(this.searchQuery);
-      if (this.clearSearchDesktop) this.clearSearchDesktop.classList.toggle('hidden', !hasVal);
-      if (this.clearSearchMobile) this.clearSearchMobile.classList.toggle('hidden', !hasVal);
-
-      this.renderView();
-    };
-
-    if (this.searchDesktop) this.searchDesktop.addEventListener('input', handleSearch);
-    if (this.searchMobile) this.searchMobile.addEventListener('input', handleSearch);
-
-    const clearSearch = () => {
-      this.searchQuery = '';
-      if (this.searchDesktop) this.searchDesktop.value = '';
-      if (this.searchMobile) this.searchMobile.value = '';
-      if (this.clearSearchDesktop) this.clearSearchDesktop.classList.add('hidden');
-      if (this.clearSearchMobile) this.clearSearchMobile.classList.add('hidden');
-      this.renderView();
-    };
-
-    if (this.clearSearchDesktop) this.clearSearchDesktop.addEventListener('click', clearSearch);
-    if (this.clearSearchMobile) this.clearSearchMobile.addEventListener('click', clearSearch);
-
-    if (this.clearFiltersBtn) {
-      this.clearFiltersBtn.addEventListener('click', () => this.clearFilters());
-    }
-  }
-
-  render() {
-    this.updateCounters();
-    this.renderFilterButtons();
-    this.renderView();
   }
 }
