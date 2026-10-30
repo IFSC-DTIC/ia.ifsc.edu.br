@@ -3,10 +3,10 @@
  * Inicializacao e Orquestracao Modular
  */
 
-import { loadCatalog } from './data/catalog.js?v=20261029v4';
-import { UIController, initAntiSpamEmails } from './modules/ui.js?v=20261029v4';
-import { AppRouter } from './modules/router.js?v=20261029v4';
-import { Analytics } from './modules/analytics.js?v=20261029v4';
+import { loadCatalog } from './data/catalog.js?v=20261030v1';
+import { UIController, initAntiSpamEmails, FocusTrap } from './modules/ui.js?v=20261030v1';
+import { AppRouter } from './modules/router.js?v=20261030v1';
+import { Analytics } from './modules/analytics.js?v=20261030v1';
 
 async function initApp() {
   try {
@@ -65,6 +65,7 @@ async function initApp() {
     const ot04ModalContent = document.getElementById('ot04-modal-content');
     const closeOt04ModalBtn = document.getElementById('close-ot04-modal-btn');
     const ot04ModalBackdrop = document.getElementById('ot04-modal-backdrop');
+    const ot04Trap = new FocusTrap(ot04Modal, () => window.closeOt04Modal());
 
     window.openOt04Modal = () => {
       if (!ot04Modal) return;
@@ -74,11 +75,13 @@ async function initApp() {
         ot04ModalContent.classList.remove('scale-95');
         ot04ModalContent.classList.add('scale-100');
       }
+      ot04Trap.activate();
       Analytics.trackOt04Access();
     };
 
     window.closeOt04Modal = () => {
       if (!ot04Modal) return;
+      ot04Trap.deactivate();
       ot04Modal.classList.remove('opacity-100');
       if (ot04ModalContent) {
         ot04ModalContent.classList.remove('scale-100');
@@ -97,6 +100,7 @@ async function initApp() {
     const msInfoModalContent = document.getElementById('ms-info-modal-content');
     const closeMsInfoModalBtn = document.getElementById('close-ms-info-modal-btn');
     const msInfoModalBackdrop = document.getElementById('ms-info-modal-backdrop');
+    const msInfoTrap = new FocusTrap(msInfoModal, () => closeMsInfoModal());
 
     window.openMsInfoModal = () => {
       if (!msInfoModal) return;
@@ -106,10 +110,12 @@ async function initApp() {
         msInfoModalContent.classList.remove('scale-95');
         msInfoModalContent.classList.add('scale-100');
       }
+      msInfoTrap.activate();
     };
 
     const closeMsInfoModal = () => {
       if (!msInfoModal) return;
+      msInfoTrap.deactivate();
       msInfoModal.classList.remove('opacity-100');
       if (msInfoModalContent) {
         msInfoModalContent.classList.remove('scale-100');
@@ -119,9 +125,44 @@ async function initApp() {
         msInfoModal.classList.add('pointer-events-none');
       }, 200);
     };
+    window.closeMsInfoModal = closeMsInfoModal;
 
     if (closeMsInfoModalBtn) closeMsInfoModalBtn.addEventListener('click', closeMsInfoModal);
     if (msInfoModalBackdrop) msInfoModalBackdrop.addEventListener('click', closeMsInfoModal);
+
+    // Modal de Termos de Uso, Privacidade e Isenção (LGPD)
+    const termsModal = document.getElementById('terms-modal');
+    const termsModalContent = document.getElementById('terms-modal-content');
+    const closeTermsModalBtn = document.getElementById('close-terms-modal-btn');
+    const termsModalBackdrop = document.getElementById('terms-modal-backdrop');
+    const termsTrap = new FocusTrap(termsModal, () => window.closeTermsModal());
+
+    window.openTermsModal = () => {
+      if (!termsModal) return;
+      termsModal.classList.remove('pointer-events-none');
+      termsModal.classList.add('opacity-100');
+      if (termsModalContent) {
+        termsModalContent.classList.remove('scale-95');
+        termsModalContent.classList.add('scale-100');
+      }
+      termsTrap.activate();
+    };
+
+    window.closeTermsModal = () => {
+      if (!termsModal) return;
+      termsTrap.deactivate();
+      termsModal.classList.remove('opacity-100');
+      if (termsModalContent) {
+        termsModalContent.classList.remove('scale-100');
+        termsModalContent.classList.add('scale-95');
+      }
+      setTimeout(() => {
+        termsModal.classList.add('pointer-events-none');
+      }, 200);
+    };
+
+    if (closeTermsModalBtn) closeTermsModalBtn.addEventListener('click', window.closeTermsModal);
+    if (termsModalBackdrop) termsModalBackdrop.addEventListener('click', window.closeTermsModal);
 
     // Fechamento de modais
     if (ui.closeModalBtn) ui.closeModalBtn.addEventListener('click', () => ui.closeModal());
@@ -133,6 +174,7 @@ async function initApp() {
         ui.closeModal();
         closeMsInfoModal();
         window.closeOt04Modal();
+        window.closeTermsModal();
       }
     });
 
