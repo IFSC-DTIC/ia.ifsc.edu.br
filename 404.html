@@ -283,7 +283,10 @@
         'adobe': { id: 'partner-adobe-cc', tab: 'partnerships' },
         'firefly': { id: 'partner-adobe-cc', tab: 'partnerships' },
         'perplexity': { id: 'partner-perplexity-pro', tab: 'partnerships' },
-        'perplexity-pro': { id: 'partner-perplexity-pro', tab: 'partnerships' }
+        'perplexity-pro': { id: 'partner-perplexity-pro', tab: 'partnerships' },
+        'google-student': { id: 'partner-google-ai-student', tab: 'partnerships' },
+        'ai-student': { id: 'partner-google-ai-student', tab: 'partnerships' },
+        'google-one-student': { id: 'partner-google-ai-student', tab: 'partnerships' }
       };
 
       const params = new URLSearchParams(window.location.search);
@@ -446,6 +449,12 @@
                       <i class="bi bi-check-circle-fill text-amber-600"></i>
                       <span>${escapeHtml(targetApp.domain_requirement || 'Acesso para estudantes com e-mail institucional acadêmico')}</span>
                     </p>
+                    <div class="mt-2 pt-2 border-t border-amber-200/80 dark:border-amber-800/60 text-[10px] text-amber-900/90 dark:text-amber-200/90 leading-relaxed">
+                      <p class="flex items-start gap-1">
+                        <i class="bi bi-shield-exclamation text-amber-700 dark:text-amber-400 shrink-0 mt-0.5"></i>
+                        <span><strong>Termos de Terceiros & Isenção IFSC:</strong> O IFSC atua exclusivamente na divulgação educacional e isenta-se de responsabilidade por alterações unilaterais em ofertas, planos, preços ou regras de parceiros. Ao prosseguir, aplicam-se integralmente os Termos de Uso e Política de Privacidade do provedor externo. Saiba mais na <a href="https://www.ifsc.edu.br/en/lgpd-lei-geral-de-protecao-de-dados" target="_blank" rel="noopener noreferrer" class="underline font-bold text-amber-950 dark:text-amber-100 hover:text-amber-700 inline-flex items-center gap-0.5">LGPD no IFSC<i class="bi bi-box-arrow-up-right text-[8px] ml-0.5"></i></a>.</span>
+                      </p>
+                    </div>
                   </div>
                 </div>
               `;
@@ -463,6 +472,10 @@
                     <p class="mt-1 text-xs leading-relaxed text-emerald-900 dark:text-emerald-300">
                       Acesse autenticado com <code class="font-mono font-bold bg-emerald-200/80 dark:bg-emerald-900 px-1 py-0.2 rounded">@ifsc.edu.br</code> ou <code class="font-mono font-bold bg-emerald-200/80 dark:bg-emerald-900 px-1 py-0.2 rounded">@aluno.ifsc.edu.br</code>. Contas <code class="font-mono">@gmail.com</code> pessoais não têm permissão.
                     </p>
+                    <p class="mt-1.5 text-[11px] leading-relaxed text-emerald-800 dark:text-emerald-300 pt-0.5 border-t border-emerald-200/80 dark:border-emerald-800/60">
+                      <i class="bi bi-info-circle-fill text-[#32a041] dark:text-emerald-400 mr-1"></i>
+                      <span><strong>Estudantes:</strong> acesse sua conta Gmail institucional usando o mesmo login e senha do SIGAA (<a href="https://www.ifsc.edu.br/servicos-de-tecnologia" target="_blank" rel="noopener noreferrer" class="font-bold underline text-[#247a30] dark:text-emerald-300 hover:text-emerald-900 dark:hover:text-emerald-100 inline-flex items-center gap-0.5">instruções de acesso<i class="bi bi-box-arrow-up-right text-[9px] ml-0.5"></i></a>).</span>
+                    </p>
                   </div>
                 </div>
               `;
@@ -479,6 +492,9 @@
                     </div>
                     <p class="mt-1 text-xs text-emerald-900 dark:text-emerald-200 font-medium leading-relaxed">
                       Esta ferramenta é <strong>pública</strong> e funciona com <strong>qualquer conta Google (@gmail.com pessoal)</strong>, além de contas do IFSC (@ifsc.edu.br / @aluno.ifsc.edu.br).
+                    </p>
+                    <p class="mt-1 text-[11px] text-emerald-800 dark:text-emerald-400">
+                      Estudantes acessam o Gmail institucional com login e senha do SIGAA (<a href="https://www.ifsc.edu.br/servicos-de-tecnologia" target="_blank" rel="noopener noreferrer" class="underline font-bold hover:text-emerald-950 dark:hover:text-emerald-200">instruções</a>).
                     </p>
                   </div>
                 </div>
