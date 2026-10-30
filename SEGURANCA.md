@@ -17,6 +17,8 @@ Este documento estabelece as diretrizes técnicas, arquiteturais e normativas de
 | ✅ | **Sanitização contra XSS e Protocolos** | Dados dinâmicos e parâmetros tratados via `escapeHtml()`, `textContent` e allowlist de protocolo `sanitizeUrl()` (`https:` / `http:` / caminhos relativos) em `ui.js`, `app.js` e `404.html`. | Alto (Prevenção de DOM-XSS e injeção `javascript:`) |
 | ✅ | **Links Externos Seguros** | Todas as âncoras para sistemas externos utilizam `target="_blank"` e `rel="noopener noreferrer"`. | Médio (Prevenção de *Reverse Tabnabbing*) |
 | ✅ | **Ofuscação Anti-Scraping de E-mails** | E-mails institucionais ofuscados em Base64 no HTML estático e reconstruídos via JavaScript (`js-safe-email`) sob interação do navegador. | Médio (Proteção contra SPAM/Phishing) |
+| ✅ | **Acessibilidade e Usabilidade Segura (WCAG 2.1 AA)** | Modais com classe `FocusTrap` impedindo vazamento de foco para plano de fundo, `aria-live="polite"` na busca dinâmica e alternância semântica de `aria-pressed`. | Médio (Inclusão e prevenção de armadilhas de teclado) |
+| ✅ | **Isenção Institucional e LGPD** | Avisos explícitos e modal de termos isentando o IFSC de responsabilidade por alterações comerciais de terceiros, com link direto ao Encarregado (DPO) do IFSC. | Alto (Mitigação de litígios e conformidade regulatória) |
 | ✅ | **Arquitetura Zero-Backend (Local-First)** | Sem banco de dados em nuvem nem retenção de prompts no portal. Preferências e termos gerados 100% no dispositivo do usuário. | Crítico (Superfície de ataque zero no servidor) |
 
 ---
