@@ -64,5 +64,11 @@ Para garantir estabilidade arquitetural e conformidade jurídica quando agentes 
 
 ### D. Padrões de Codificação, Cache-Busting e Segurança Client-Side
 - **Versionamento de Módulos ES6 (`?v=...`):** Sempre que módulos em `assets/js/` ou `assets/css/` sofrerem alterações estruturais, incrementar o sufixo de *cache-busting* nas importações ES6 (`index.html`, `app.js` e `ui.js`) para evitar *version skew* na CDN do GitHub Pages.
-- **Sanitização e Acessibilidade (WCAG 2.1 AA):** Utilizar obrigatoriamente `escapeHtml()`, `textContent` e `sanitizeUrl()` em qualquer dado oriundo de JSON/URL, mantendo suporte a teclado (`tabindex="0"`, `Enter`/`Space`, `Escape`) e atributos `aria-*` em cards e modais.
-- **Privacy-by-Design:** Proibido inserir *trackers* não homologados, coletar prompts de usuários, disparar logs de cliente em produção ou versionar chaves de API / arquivos `.env`.
+- **Sanitização e Acessibilidade (WCAG 2.1 AA):** Utilizar obrigatoriamente `escapeHtml()`, `textContent` e `sanitizeUrl()` em qualquer dado oriundo de JSON/URL. Manter foco aprisionado nos modais com `FocusTrap`, anunciar resultados de busca dinamicamente via `#search-announcer` (`aria-live="polite"`), gerenciar estados `aria-selected` e `aria-pressed`, e garantir encerramento com `Escape`.
+- **Privacy-by-Design e Isenção Institucional:** Proibido inserir *trackers* invasivos, coletar prompts de usuários ou reter dados pessoais. O portal provê isenção expressa de responsabilidade sobre termos de terceiros e links para o canal oficial da LGPD no IFSC.
+
+---
+
+## 5. Licenciamento de Software Livre (Apache 2.0)
+
+O projeto é regido formalmente pela licença **Apache License 2.0** ([`LICENSE`](LICENSE)), assegurando liberdade de uso, modificação, distribuição e preservação de direitos patrimoniais e de marcas institucionais do Instituto Federal de Santa Catarina (DTIC/CGD).

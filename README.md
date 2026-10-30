@@ -1,6 +1,8 @@
 # Portal de Inteligência Artificial do IFSC — ia.ifsc.edu.br
 
 [![Status: Homologado OT 04/2025](https://img.shields.io/badge/IFSC-OT%2004%2F2025-00823B.svg)](https://www.ifsc.edu.br/web/portal-do-servidor/gestao-de-dados)
+[![Licença: Apache 2.0](https://img.shields.io/badge/Licen%C3%A7a-Apache%202.0-blue.svg)](LICENSE)
+[![Acessibilidade: WCAG 2.1 AA](https://img.shields.io/badge/Acessibilidade-WCAG%202.1%20AA-success.svg)](#-acessibilidade-e-inclusão-digital-wcag-21-aa--e-mag)
 [![Arquitetura: Zero-Backend](https://img.shields.io/badge/Arquitetura-Zero--Backend-blue.svg)](ARQUITETURA.md)
 [![Conformidade: LGPD & ECA](https://img.shields.io/badge/Conformidade-LGPD%20%26%20ECA-success.svg)](SEGURANCA.md)
 [![Hospedagem: GitHub Pages](https://img.shields.io/badge/Deploy-GitHub%20Pages-informational.svg)](https://ia.ifsc.edu.br/)
@@ -33,8 +35,7 @@ Este portal foi concebido e estruturado para operacionalizar as diretrizes da **
 - 🎓 **Google for Education (Workspace IFSC):** Recursos de IA integrados com suporte institucional e garantia contratual de não-treinamento sob login `@ifsc.edu.br` e `@aluno.ifsc.edu.br` (AI Studio, Gemini, NotebookLM, Colab com GPU T4, Jules, Antigravity, Opal, Pomelli, Stitch).
 - 💼 **Microsoft 365 Education (A1):** Copilot Web, Office Web, Teams, OneDrive (**100 GB por usuário**, conforme política global da Microsoft de 2024), Power BI e guia de autocadastro institucional.
 - 🤝 **Parcerias Oficiais para Estudantes e Servidores:** Hub de ferramentas de ponta com planos educacionais e gratuidades verificadas por e-mail institucional (`@aluno.ifsc.edu.br` ou `@ifsc.edu.br`):
-  - **Google AI Pro (Gemini Advanced):** Gemini Pro, Veo, Flow, Whisk, NotebookLM expandido e 2 TB de armazenamento.
-  - **Microsoft Copilot:** Assistente de IA integrado ao MS365 na licença educacional A1.
+  - **Google AI para Universitários:** Plano Google AI Plus (400 GB) gratuito (R$ 0/mês) e Plano Google AI Pro (5 TB) com 75% de desconto por até 4 anos (R$ 23,99/mês), incluindo Gemini NotebookLM com até 1.500 páginas por caderno, Gemini Omni Flash, Nano Banana Pro, Google Antigravity, Jules e YouTube Premium Lite individual sem anúncios.
   - **Canva para Educação (Canva Pro):** Acesso a Magic Write e Magic Media para discentes e docentes.
   - **GitHub Copilot (Education Pack):** Autocomplete e pair programming inteligente para estudantes e professores.
   - **Notion AI (Plano Plus):** Assistente de redação e organização acadêmica com IA.
@@ -50,7 +51,11 @@ Este portal foi concebido e estruturado para operacionalizar as diretrizes da **
 - Suporte integral via [`404.html`](404.html) e [`router.js`](assets/js/modules/router.js) a links diretos para ferramentas (`ia.ifsc.edu.br/?app=guardiao`) e abas (`ia.ifsc.edu.br/?tab=partnerships`) no GitHub Pages.
 
 ### 3. Filtros Unificados, Acessibilidade e Privacidade no Cliente
-- **Segmentação por Público-Alvo:** Filtros em linha única para `Todos`, `Servidores`, `Alunos` e `Comunidade`, combinados com filtros por área temática e favoritos locais (`localStorage`).
+- **Segmentação por Público-Alvo:** Filtros em linha única para `Todos`, `Servidores`, `Alunos` e `Comunidade`, combinados com filtros por área temática e favoritos locais (`localStorage`), com alternância dinâmica do atributo `aria-pressed="true|false"` para tecnologias assistivas.
+- **Acessibilidade e Inclusão Digital (WCAG 2.1 AA / e-MAG):**
+  - **Focus Trap nos Modais:** Implementação de classe reativa `FocusTrap` em todos os diálogos modais (`#app-modal`, `#ot04-modal`, `#terms-modal`, `#ms-info-modal`), retendo a navegação sequencial por `Tab`/`Shift+Tab` no contexto ativo e restaurando automaticamente o foco ao elemento acionador ao pressionar `Escape` ou clicar no botão fechar.
+  - **Região Dinâmica `aria-live`:** Região discreta `#search-announcer` (`aria-live="polite"`, `aria-atomic="true"`, classe `sr-only`) que comunica a usuários de leitores de tela o total exato de ferramentas e recursos localizados em tempo real conforme a digitação.
+  - **Navegação Semântica por Abas:** Alternância dinâmica de `aria-selected="true|false"` nos botões seletores de abas do fichário institucional.
 - **Proteção Anti-Scraping de E-mails com JS/Base64:** Todos os e-mails institucionais exibidos no portal são ofuscados no HTML estático e reconstruídos dinamicamente apenas durante a interação do navegador (`js-safe-email`).
 
 ---
@@ -156,6 +161,25 @@ Conforme as diretrizes de governança da DTIC/CGD (**FLM**), **não altere a est
 
 ---
 
+## ⚖️ Termos de Uso, Isenção de Responsabilidade e LGPD
+
+1. **Curadoria Acadêmica e Isenção de Responsabilidade:** O Portal de IA do IFSC atua estritamente como agente curador e disseminador de oportunidades educacionais e diretrizes institucionais. O IFSC **não comercializa ferramentas** e **isenta-se formalmente de qualquer responsabilidade** por alterações unilaterais de valores, encerramento de gratuidades, planos comerciais, disponibilidade de recursos ou atualizações nos termos de adesão efetuadas pelos provedores parceiros terceiros (Google, Microsoft, Canva, GitHub, Perplexity, Adobe, Grammarly, etc.).
+2. **Conformidade com a LGPD (Lei nº 13.709/2018):** O portal adota o princípio de *Privacy-by-Design*. A telemetria analítica opera com anonimização mandatória de IP (`anonymize_ip: true`), bloqueio de sinais de perfilamento publicitário e anonimização de dados no Clarity. Nenhum prompt, dado de navegação pessoal ou identificador civil é capturado ou transmitido a servidores intermediários.
+3. **Direitos do Titular e Contato do DPO:** Para exercer seus direitos de privacidade ou obter esclarecimentos institucionais, consulte o canal oficial do [Encarregado de Proteção de Dados (DPO) do IFSC](https://www.ifsc.edu.br/en/lgpd-lei-geral-de-protecao-de-dados) e a [Política de Privacidade do IFSC](https://www.ifsc.edu.br/politica-de-privacidade).
+
+---
+
 ## 📄 Licença
 
-Distribuído sob licença de software livre e aberto para a comunidade do Instituto Federal de Educação, Ciência e Tecnologia de Santa Catarina (IFSC).
+Distribuído sob a licença de código aberto **[Apache 2.0](LICENSE)**.
+
+```text
+Copyright 2026 Instituto Federal de Educação, Ciência e Tecnologia de Santa Catarina (IFSC)
+Diretoria de Tecnologia da Informação e Comunicação (DTIC) / Coordenadoria de Gestão de Dados (CGD)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+```
