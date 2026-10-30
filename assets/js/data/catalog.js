@@ -666,7 +666,6 @@ export const microsoftCategories = [
   }
 ];
 
-
 // Coleção de Parcerias Oficiais & Oportunidades Estudantis
 export const defaultPartnershipsCategories = [
   {
@@ -698,7 +697,10 @@ export const defaultPartnershipsCategories = [
           "deep research"
         ],
         "access_scope": "estudante_edubr",
-        "domain_requirement": "Gratuito para estudantes com e-mail institucional (@aluno.ifsc.edu.br ou @edu.br)"
+        "domain_requirement": "Gratuito para estudantes com e-mail institucional (@aluno.ifsc.edu.br ou @edu.br)",
+        "audiences": [
+          "alunos"
+        ]
       },
       {
         "id": "partner-google-ai-student",
@@ -707,15 +709,15 @@ export const defaultPartnershipsCategories = [
         "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/google.png",
         "badge": "Até 75% OFF • Universitários",
         "category": "IA & Produtividade",
-        "description": "Ofertas exclusivas para estudantes universitários: plano básico Google AI Plus (400 GB) por R$ 0/mês ou plano avançado Google AI Pro (5 TB) com até 75% de desconto (R$ 23,99/mês por até 4 anos), incluindo Gemini e NotebookLM com análise de até 1.500 páginas de notas, Gemini Omni Flash, Nano Banana Pro, Google Antigravity, Jules e YouTube Premium.",
-        "opportunity_plan": "A partir de R$ 0/mês (AI Plus 400 GB) ou até 75% OFF no AI Pro 5 TB (R$ 23,99/mês por até 4 anos)",
+        "description": "Oferta para universitários: plano básico Google AI Plus (400 GB) por R$ 0/mês ou Google AI Pro (5 TB) com até 75% de desconto (R$ 23,99/mês por até 4 anos), com Gemini, NotebookLM e YouTube Premium.",
+        "opportunity_plan": "A partir de R$ 0/mês (AI Plus 400 GB) ou até 75% OFF no AI Pro (R$ 23,99/mês por até 4 anos)",
         "modalSummaryPoints": [
           "Plano Google AI Plus (400 GB): R$ 0/mês para estudantes universitários elegíveis.",
-          "Plano Google AI Pro (5 TB): R$ 23,99/mês (75% de desconto em vez de R$ 96,99/mês por até 4 anos), incluindo YouTube Premium Lite Individual sem custo financeiro adicional.",
-          "Plano Google AI Pro com YouTube Premium (5 TB): R$ 35,99/mês (70% de desconto em vez de R$ 123,89/mês por até 4 anos), incluindo YouTube Premium individual completo e YouTube Music sem anúncios e off-line.",
-          "Recursos Pro: Gemini e NotebookLM com capacidade de analisar até 1.500 páginas de anotações, Gemini Omni Flash, Nano Banana Pro, acesso à plataforma de desenvolvimento de IA (Google Antigravity, Jules, Google Developer Program Premium) e 5 TB de armazenamento para Fotos, Drive e Gmail.",
-          "Regras e Condições: Exclusivo para universitários com comprovação de matrícula estudantil ativa. Limite máximo de desconto por até 4 anos (depois R$ 96,99/mês). Planos individuais (sem compartilhamento familiar). Cancele quando quiser.",
-          "Aviso Legal & LGPD: Oferta comercial gerida exclusivamente pelo Google One. O IFSC não tem ingerência comercial e isenta-se de responsabilidade por alterações unilaterais de valores ou regras. Ao prosseguir, aplicam-se os Termos de Uso e Política de Privacidade do provedor (conforme Lei Geral de Proteção de Dados e https://www.ifsc.edu.br/en/lgpd-lei-geral-de-protecao-de-dados)."
+          "Plano Google AI Pro (5 TB): R$ 23,99/mês (75% de desconto em vez de R$ 96,99/mês por até 4 anos; inclui YouTube Premium Lite individual).",
+          "Plano Google AI Pro com YouTube Premium (5 TB): R$ 35,99/mês (70% de desconto por até 4 anos; inclui YouTube Premium e Music).",
+          "Recursos Pro: Gemini e NotebookLM (análise de até 1.500 págs), Antigravity, Jules e 5 TB de armazenamento para Fotos, Drive e Gmail.",
+          "Regras & Condições: Exclusivo para universitários com comprovação estudantil ativa (limite de até 4 anos). Demais regras, elegibilidade e termos completos devem ser consultados diretamente no site oficial da oferta.",
+          "Isenção IFSC: Oferta comercial gerida exclusivamente pelo Google One. O IFSC não tem ingerência comercial e isenta-se expressamente de responsabilidade sobre preços, regras ou alterações unilaterais do parceiro."
         ],
         "ot04_status": "Parceria Oficial Estudantes",
         "safety_rating": "Google One",
@@ -734,7 +736,7 @@ export const defaultPartnershipsCategories = [
           "youtube premium"
         ],
         "access_scope": "estudante_edubr",
-        "domain_requirement": "Exclusivo para estudantes universitários elegíveis (desconto de até 75% por até 4 anos)",
+        "domain_requirement": "Exclusivo para estudantes universitários elegíveis (consulte regras e detalhes no site da oferta)",
         "audiences": [
           "alunos"
         ]
@@ -908,7 +910,6 @@ export const defaultPartnershipsCategories = [
     ]
   }
 ];
-
 
 /**
  * Dedução resiliente de públicos (servidores, alunos, comunidade)
