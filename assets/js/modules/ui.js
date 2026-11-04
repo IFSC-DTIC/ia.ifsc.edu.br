@@ -789,7 +789,7 @@ export class UIController {
               <span class="px-2 py-0.2 rounded text-[9px] font-black bg-emerald-200 dark:bg-emerald-900 text-[#247a30] dark:text-emerald-200 uppercase tracking-wider">Servidor • Estudante</span>
             </div>
             <p class="text-[11px] leading-relaxed text-emerald-900 dark:text-emerald-300">
-              Acesse autenticado com <code class="font-mono font-bold bg-emerald-200/80 dark:bg-emerald-900/80 px-1 py-0.2 rounded text-emerald-950 dark:text-emerald-100">@ifsc.edu.br</code> ou <code class="font-mono font-bold bg-emerald-200/80 dark:bg-emerald-900/80 px-1 py-0.2 rounded text-emerald-950 dark:text-emerald-100">@aluno.ifsc.edu.br</code>. Contas <code class="font-mono">@gmail.com</code> pessoais não têm permissão.
+              Acesse autenticado com <code class="font-mono font-bold bg-emerald-200/80 dark:bg-emerald-900/80 px-1 py-0.2 rounded text-emerald-950 dark:text-emerald-100">@ifsc.edu.br</code> ou <code class="font-mono font-bold bg-emerald-200/80 dark:bg-emerald-900/80 px-1 py-0.2 rounded text-emerald-950 dark:text-emerald-100">@aluno.ifsc.edu.br</code>. Contas de outros provedores de e-mail (gmail.com, hotmail.com etc.) não têm permissão.
             </p>
             <p class="text-[10.5px] leading-relaxed text-emerald-800 dark:text-emerald-300 pt-0.5">
               <i class="bi bi-info-circle-fill text-[#32a041] dark:text-emerald-400 mr-1"></i>
