@@ -36,14 +36,14 @@
       "apps": [
         {
           "id": "sezio",
-          "name": "sez.iO - Agente IA",
-          "url": "https://ai.studio/apps/drive/1z-e1wW2LvCStdG9ElsIeNt3x4-Q5tqOZ?showAssistant=true&showPreview=true&fullscreenApplet=true",
-          "description": "Assistente de Modelagem de Processos e Relatórios LGPD."
+          "name": "Modelador BPMN - sez.iO",
+          "url": "https://ai.studio/apps/c308dca6-1a71-43fe-b68c-7079cd4cc0e9",
+          "description": "Modelador BPMN com IA: Assistente de Modelagem de Processos e Relatórios LGPD."
         },
         {
           "id": "lardic",
           "name": "LaRDiC - Laboratório de Roteirização e Documentação com IA",
-          "url": "https://ai.studio/apps/drive/1UDGQ0KWeFrb47zM5koH2NJooFXos7Q46?showAssistant=true&showPreview=true&fullscreenApplet=true",
+          "url": "https://ai.studio/apps/8b731b79-1dde-4879-bb35-b1c24363a235",
           "description": "Sistema CProc: BPMN/DMN->ProcessoIFSC->DocX"
         },
         {
@@ -61,8 +61,8 @@
         {
           "id": "processo",
           "name": "Texto -> Processo -> Especificação de Sistema",
-          "url": "https://ai.studio/apps/drive/1GvqPgG2sjuoaw2XM89jj7Hfk3z4V9GO9?showAssistant=true&showPreview=true&fullscreenApplet=true",
-          "description": "Mapeador de Processos Automágico com IA"
+          "url": "https://ai.studio/apps/5b63d65c-ad5e-4b57-82db-fdc2d14fe38e",
+          "description": "Texto -> Processo -> Especificação de Sistema automatizada com IA (saindo de BPM para UML)."
         }
       ]
     },
